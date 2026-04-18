@@ -12,6 +12,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Темы */
         :root {
             --bg: #ffffff;
             --bg-secondary: #f5f5f7;
@@ -37,12 +38,28 @@
             --received: #2c2c2e;
         }
 
+        body.theme-purple {
+            --accent: #af52de;
+            --sent: #af52de;
+        }
+
+        body.theme-green {
+            --accent: #34c759;
+            --sent: #34c759;
+        }
+
+        body.theme-orange {
+            --accent: #ff9f0a;
+            --sent: #ff9f0a;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
+            transition: all 0.2s ease;
         }
 
         /* Auth */
@@ -70,7 +87,7 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 32px;
-            background: linear-gradient(135deg, #007aff, #5856d6);
+            background: linear-gradient(135deg, var(--accent), #5856d6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -130,7 +147,6 @@
             height: 100%;
         }
 
-        /* Список чатов */
         .chats-panel {
             width: 100%;
             max-width: 360px;
@@ -157,7 +173,7 @@
         .avatar {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #007aff, #5856d6);
+            background: linear-gradient(135deg, var(--accent), #5856d6);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -187,6 +203,7 @@
             display: flex;
             gap: 8px;
             margin-top: 12px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -244,9 +261,7 @@
         .chat-info { flex: 1; }
         .chat-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
         .chat-preview { font-size: 13px; color: var(--text-secondary); }
-        .online-dot { width: 8px; height: 8px; background: var(--online); border-radius: 50%; display: inline-block; margin-right: 6px; }
 
-        /* Чат */
         .chat-panel {
             flex: 1;
             display: flex;
@@ -381,6 +396,8 @@
             padding: 24px;
             width: 100%;
             max-width: 360px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-header { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
@@ -402,6 +419,22 @@
             background-size: cover;
             background-position: center;
         }
+
+        .theme-option {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .theme-option.active { border-color: var(--accent); }
+        .theme-default { background: #007aff; }
+        .theme-dark { background: #1c1c1e; }
+        .theme-purple { background: #af52de; }
+        .theme-green { background: #34c759; }
+        .theme-orange { background: #ff9f0a; }
 
         .switch {
             position: relative;
@@ -459,7 +492,6 @@
             .chat-panel.hide { display: none; }
             
             .back-btn { display: flex; }
-            
             .message { max-width: 85%; }
         }
     </style>
@@ -483,7 +515,7 @@
         <div class="chats-panel" id="chatsPanel">
             <div class="panel-header">
                 <div class="current-user">
-                    <div class="avatar" id="userAvatar" onclick="openAvatarModal()">?</div>
+                    <div class="avatar" id="userAvatar" onclick="openProfileModal()">?</div>
                     <div class="user-info">
                         <h3 id="userName"></h3>
                         <p>онлайн</p>
@@ -521,6 +553,7 @@
     </div>
 </div>
 
+<!-- Настройки -->
 <div id="settingsModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">Настройки</div>
@@ -529,10 +562,33 @@
             <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
         </div>
         <div class="setting-row">
+            <span>Цветовая тема</span>
+            <div>
+                <div class="theme-option theme-default" onclick="setColorTheme('default')"></div>
+                <div class="theme-option theme-purple" onclick="setColorTheme('purple')"></div>
+                <div class="theme-option theme-green" onclick="setColorTheme('green')"></div>
+                <div class="theme-option theme-orange" onclick="setColorTheme('orange')"></div>
+            </div>
+        </div>
+        <div class="setting-row">
             <span>Уведомления</span>
             <label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label>
         </div>
         <button id="closeSettingsBtn" class="auth-btn" style="margin-top: 20px;">Закрыть</button>
+    </div>
+</div>
+
+<!-- Редактирование профиля -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">Мой профиль</div>
+        <div class="avatar-preview" id="profileAvatarPreview"></div>
+        <input type="text" id="profileName" class="auth-input" placeholder="Имя">
+        <input type="text" id="profileUsername" class="auth-input" placeholder="@username" readonly style="opacity:0.7">
+        <input type="file" id="profileAvatarInput" accept="image/*" style="display: none;">
+        <button id="uploadProfileAvatarBtn" class="auth-btn" style="margin-bottom: 10px;">Сменить фото</button>
+        <button id="saveProfileBtn" class="auth-btn" style="margin-bottom: 10px;">Сохранить</button>
+        <button id="closeProfileModal" class="auth-btn" style="background: var(--bg-tertiary); color: var(--text);">Отмена</button>
     </div>
 </div>
 
@@ -566,11 +622,12 @@
     let allMessages = {};
     let isLoginMode = true;
     let isConnecting = false;
+    let reconnectTimer = null;
 
     const SESSION_KEY = 'envex_user_data';
 
-    function saveUserData(username, password, name) {
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ username, password, name, savedAt: Date.now() }));
+    function saveUserData(username, password, name, avatar) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ username, password, name, avatar, savedAt: Date.now() }));
     }
 
     function loadUserData() {
@@ -586,12 +643,17 @@
         } catch(e) { return null; }
     }
 
-    function clearUserData() { localStorage.removeItem(SESSION_KEY); }
+    function clearUserData() { 
+        localStorage.removeItem(SESSION_KEY);
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+    }
 
     function showError(msg) {
         const errDiv = document.getElementById('errorMsg');
-        errDiv.textContent = msg;
-        setTimeout(() => errDiv.textContent = '', 3000);
+        if (errDiv) {
+            errDiv.textContent = msg;
+            setTimeout(() => errDiv.textContent = '', 3000);
+        }
     }
 
     function getWebSocketUrl() {
@@ -603,8 +665,14 @@
         if (isConnecting) return;
         isConnecting = true;
         const btn = document.getElementById('authSubmitBtn');
-        btn.disabled = true;
-        btn.textContent = 'Подключение...';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Подключение...';
+        }
+        
+        if (ws) {
+            try { ws.close(); } catch(e) {}
+        }
         
         ws = new WebSocket(getWebSocketUrl());
         
@@ -631,11 +699,11 @@
                         avatar.style.backgroundImage = '';
                         avatar.textContent = data.name.charAt(0).toUpperCase();
                     }
-                    saveUserData(username, password, data.name);
+                    saveUserData(username, password, data.name, data.avatar);
                     document.getElementById('authScreen').style.display = 'none';
                     document.getElementById('appScreen').style.display = 'block';
                     isConnecting = false;
-                    btn.disabled = false;
+                    if (btn) btn.disabled = false;
                 }
                 
                 if (data.type === 'users') { allUsers = data.users; renderChats(); }
@@ -658,25 +726,47 @@
                     allMessages[chatId].push(msg);
                     if (currentChat && currentChat.id === chatId) renderMessages();
                     renderChats();
+                    if (document.getElementById('notifToggle').checked && document.hidden) {
+                        new Notification('envex', { body: `${msg.from}: ${msg.text}` });
+                    }
+                }
+                
+                if (data.type === 'profile_updated') {
+                    const saved = loadUserData();
+                    if (saved) {
+                        saveUserData(saved.username, saved.password, data.name, data.avatar);
+                        document.getElementById('userName').textContent = data.name;
+                        if (data.avatar) {
+                            document.getElementById('userAvatar').style.backgroundImage = `url(${data.avatar})`;
+                            document.getElementById('userAvatar').textContent = '';
+                        }
+                    }
                 }
                 
                 if (data.type === 'error') {
                     showError(data.text);
                     isConnecting = false;
-                    btn.disabled = false;
+                    if (btn) btn.disabled = false;
                 }
             } catch(e) { console.error(e); }
         };
         
-        ws.onerror = () => { showError('Ошибка подключения'); isConnecting = false; btn.disabled = false; };
+        ws.onerror = () => { 
+            showError('Ошибка подключения'); 
+            isConnecting = false; 
+            if (btn) btn.disabled = false;
+        };
         
         ws.onclose = () => {
-            setTimeout(() => {
-                if (currentUser) {
+            if (currentUser) {
+                if (reconnectTimer) clearTimeout(reconnectTimer);
+                reconnectTimer = setTimeout(() => {
                     const saved = loadUserData();
-                    if (saved) connectAndAuth('login', saved.username, saved.password, saved.name);
-                }
-            }, 2000);
+                    if (saved && saved.username && saved.password) {
+                        connectAndAuth('login', saved.username, saved.password, saved.name);
+                    }
+                }, 2000);
+            }
         };
     }
     
@@ -808,9 +898,13 @@
             currentChat = null;
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authName').value = '';
         }
     }
     
+    // Темы
     function toggleTheme() {
         if (document.getElementById('themeToggle').checked) {
             document.body.classList.add('dark');
@@ -821,14 +915,70 @@
         }
     }
     
+    function setColorTheme(theme) {
+        document.body.classList.remove('theme-purple', 'theme-green', 'theme-orange');
+        if (theme === 'purple') document.body.classList.add('theme-purple');
+        if (theme === 'green') document.body.classList.add('theme-green');
+        if (theme === 'orange') document.body.classList.add('theme-orange');
+        localStorage.setItem('envex_color_theme', theme);
+        
+        document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
+        if (theme === 'purple') document.querySelector('.theme-purple')?.classList.add('active');
+        else if (theme === 'green') document.querySelector('.theme-green')?.classList.add('active');
+        else if (theme === 'orange') document.querySelector('.theme-orange')?.classList.add('active');
+        else document.querySelector('.theme-default')?.classList.add('active');
+    }
+    
     function loadTheme() {
-        if (localStorage.getItem('envex_theme') === 'dark') {
+        const theme = localStorage.getItem('envex_theme');
+        if (theme === 'dark') {
             document.getElementById('themeToggle').checked = true;
             document.body.classList.add('dark');
         }
+        const colorTheme = localStorage.getItem('envex_color_theme');
+        if (colorTheme && colorTheme !== 'default') setColorTheme(colorTheme);
+        else document.querySelector('.theme-default')?.classList.add('active');
     }
     
-    function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+    // Профиль
+    function openProfileModal() {
+        const saved = loadUserData();
+        if (saved) {
+            document.getElementById('profileName').value = saved.name || '';
+            document.getElementById('profileUsername').value = saved.username || '';
+            const preview = document.getElementById('profileAvatarPreview');
+            if (saved.avatar) {
+                preview.style.backgroundImage = `url(${saved.avatar})`;
+                preview.style.backgroundSize = 'cover';
+            } else {
+                preview.style.backgroundImage = '';
+                preview.style.backgroundColor = 'var(--bg-tertiary)';
+            }
+        }
+        document.getElementById('profileModal').style.display = 'flex';
+    }
+    
+    function saveProfile() {
+        const newName = document.getElementById('profileName').value.trim();
+        if (!newName) return showError('Введите имя');
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'update_profile', name: newName }));
+        }
+        
+        const saved = loadUserData();
+        if (saved) {
+            saveUserData(saved.username, saved.password, newName, saved.avatar);
+            document.getElementById('userName').textContent = newName;
+        }
+        
+        document.getElementById('profileModal').style.display = 'none';
+        showError('Профиль обновлён');
+    }
+    
+    function openAvatarModal() {
+        document.getElementById('avatarModal').style.display = 'flex';
+    }
     
     function openGroupModal() {
         const listDiv = document.getElementById('groupMembersList');
@@ -841,6 +991,7 @@
         document.getElementById('groupModal').style.display = 'flex';
     }
     
+    // Инициализация событий
     document.getElementById('authSwitch').onclick = () => {
         isLoginMode = !isLoginMode;
         const btn = document.getElementById('authSubmitBtn');
@@ -876,6 +1027,9 @@
     document.getElementById('closeGroupModal').onclick = () => document.getElementById('groupModal').style.display = 'none';
     document.getElementById('uploadAvatarBtn').onclick = () => document.getElementById('avatarInput').click();
     document.getElementById('closeAvatarModal').onclick = () => document.getElementById('avatarModal').style.display = 'none';
+    document.getElementById('uploadProfileAvatarBtn').onclick = () => document.getElementById('profileAvatarInput').click();
+    document.getElementById('saveProfileBtn').onclick = saveProfile;
+    document.getElementById('closeProfileModal').onclick = () => document.getElementById('profileModal').style.display = 'none';
     document.getElementById('themeToggle').onchange = toggleTheme;
     document.getElementById('backBtn').onclick = () => {
         document.getElementById('chatsPanel').classList.remove('hide');
@@ -908,6 +1062,28 @@
                 const avatarDiv = document.getElementById('userAvatar');
                 avatarDiv.style.backgroundImage = `url(${avatarUrl})`;
                 avatarDiv.textContent = '';
+                const saved = loadUserData();
+                if (saved) saveUserData(saved.username, saved.password, saved.name, avatarUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    document.getElementById('profileAvatarInput').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const avatarUrl = ev.target.result;
+                document.getElementById('profileAvatarPreview').style.backgroundImage = `url(${avatarUrl})`;
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'update_avatar', avatar: avatarUrl }));
+                }
+                const avatarDiv = document.getElementById('userAvatar');
+                avatarDiv.style.backgroundImage = `url(${avatarUrl})`;
+                avatarDiv.textContent = '';
+                const saved = loadUserData();
+                if (saved) saveUserData(saved.username, saved.password, saved.name, avatarUrl);
             };
             reader.readAsDataURL(file);
         }
