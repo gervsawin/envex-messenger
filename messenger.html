@@ -18,7 +18,6 @@
             overflow: hidden;
         }
 
-        /* АВТОРИЗАЦИЯ */
         .auth {
             position: fixed;
             inset: 0;
@@ -31,23 +30,24 @@
 
         .auth-card {
             background: #131318;
+            border: 1px solid #2c2c35;
             border-radius: 32px;
             padding: 48px;
             width: 420px;
         }
 
-        .auth-card h1 {
-            color: white;
+        .auth-logo {
             font-size: 48px;
-            margin-bottom: 32px;
+            font-weight: 800;
             text-align: center;
+            margin-bottom: 32px;
             background: linear-gradient(135deg, #6366f1, #a855f7);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
-        .auth-card input {
+        .auth-input {
             width: 100%;
             padding: 14px 16px;
             background: #1c1c24;
@@ -59,11 +59,11 @@
             outline: none;
         }
 
-        .auth-card input:focus {
+        .auth-input:focus {
             border-color: #6366f1;
         }
 
-        .auth-card button {
+        .auth-btn {
             width: 100%;
             padding: 14px;
             background: #6366f1;
@@ -76,7 +76,7 @@
             margin-top: 8px;
         }
 
-        .auth-card button:disabled {
+        .auth-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
@@ -96,11 +96,10 @@
         .error-msg {
             color: #ef4444;
             font-size: 12px;
-            margin-top: 8px;
+            margin-top: 12px;
             text-align: center;
         }
 
-        /* ПРИЛОЖЕНИЕ */
         .app {
             display: none;
             width: 100%;
@@ -112,7 +111,6 @@
             height: 100%;
         }
 
-        /* БОКОВАЯ ПАНЕЛЬ */
         .sidebar {
             width: 320px;
             background: #131318;
@@ -250,7 +248,6 @@
             background: #6b7280;
         }
 
-        /* ЧАТ */
         .chat {
             flex: 1;
             display: flex;
@@ -330,31 +327,6 @@
             opacity: 0.7;
         }
 
-        .message-actions {
-            position: absolute;
-            right: -32px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: none;
-            gap: 4px;
-        }
-
-        .message:hover .message-actions {
-            display: flex;
-        }
-
-        .message-action {
-            width: 24px;
-            height: 24px;
-            background: #2c2c35;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
         .input-area {
             padding: 20px 32px;
             background: #131318;
@@ -405,20 +377,18 @@
 </head>
 <body>
 
-<!-- ЭКРАН АВТОРИЗАЦИИ -->
 <div class="auth" id="authScreen">
     <div class="auth-card">
-        <h1>envex</h1>
-        <input type="text" id="authUsername" placeholder="@username (например @alex)" autocomplete="off">
-        <input type="password" id="authPassword" placeholder="Пароль">
-        <input type="text" id="authName" placeholder="Ваше имя" style="display: none;">
-        <button id="authSubmitBtn">Войти</button>
+        <div class="auth-logo">envex</div>
+        <input type="text" id="authUsername" class="auth-input" placeholder="@username (например @alex)" autocomplete="off">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Пароль">
+        <input type="text" id="authName" class="auth-input" placeholder="Ваше имя" style="display: none;">
+        <button id="authSubmitBtn" class="auth-btn">Войти</button>
         <div class="auth-switch" id="authSwitch">Нет аккаунта? <span>Создать</span></div>
         <div class="error-msg" id="errorMsg"></div>
     </div>
 </div>
 
-<!-- ПРИЛОЖЕНИЕ -->
 <div class="app" id="appScreen">
     <div class="container">
         <div class="sidebar">
@@ -467,7 +437,6 @@
     let isLoginMode = true;
     let isConnecting = false;
 
-    // DOM элементы
     const authScreen = document.getElementById('authScreen');
     const appScreen = document.getElementById('appScreen');
     const authUsername = document.getElementById('authUsername');
@@ -493,124 +462,129 @@
         setTimeout(() => { errorMsg.textContent = ''; }, 3000);
     }
 
+    function getWebSocketUrl() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host;
+        return `${protocol}//${host}`;
+    }
+
     function connectAndAuth(type, username, password, name) {
         if (isConnecting) return;
         isConnecting = true;
         authSubmitBtn.disabled = true;
         authSubmitBtn.textContent = 'Подключение...';
         
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.host;
-        ws = new WebSocket(`${protocol}//${host}`);
+        const wsUrl = getWebSocketUrl();
+        console.log('Подключение к:', wsUrl);
+        
+        ws = new WebSocket(wsUrl);
         
         ws.onopen = () => {
+            console.log('WebSocket открыт, отправка аутентификации');
             if (type === 'login') {
                 ws.send(JSON.stringify({ type: 'login', username, password }));
             } else {
-                ws.send(JSON.stringify({ type: 'register', username, password, name }));
+                ws.send(JSON.stringify({ type: 'register', username, password, name: name || username.substring(1) }));
             }
         };
         
         ws.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            
-            if (data.type === 'logged_in') {
-                currentUser = data.username;
-                userNameSpan.textContent = data.name;
-                userAvatar.textContent = data.name.charAt(0).toUpperCase();
-                authScreen.style.display = 'none';
-                appScreen.style.display = 'block';
-                isConnecting = false;
-            }
-            
-            if (data.type === 'registered') {
-                currentUser = data.username;
-                userNameSpan.textContent = data.name;
-                userAvatar.textContent = data.name.charAt(0).toUpperCase();
-                authScreen.style.display = 'none';
-                appScreen.style.display = 'block';
-                isConnecting = false;
-            }
-            
-            if (data.type === 'users') {
-                allUsers = data.users;
-                renderUsers();
-            }
-            
-            if (data.type === 'history') {
-                data.messages.forEach(msg => {
+            try {
+                const data = JSON.parse(e.data);
+                console.log('Получено:', data.type);
+                
+                if (data.type === 'logged_in') {
+                    currentUser = data.username;
+                    userNameSpan.textContent = data.name;
+                    userAvatar.textContent = data.name.charAt(0).toUpperCase();
+                    authScreen.style.display = 'none';
+                    appScreen.style.display = 'block';
+                    isConnecting = false;
+                    authSubmitBtn.disabled = false;
+                }
+                
+                if (data.type === 'registered') {
+                    currentUser = data.username;
+                    userNameSpan.textContent = data.name;
+                    userAvatar.textContent = data.name.charAt(0).toUpperCase();
+                    authScreen.style.display = 'none';
+                    appScreen.style.display = 'block';
+                    isConnecting = false;
+                    authSubmitBtn.disabled = false;
+                }
+                
+                if (data.type === 'users') {
+                    allUsers = data.users;
+                    renderUsers();
+                }
+                
+                if (data.type === 'history') {
+                    allMessages = {};
+                    data.messages.forEach(msg => {
+                        const chatId = msg.from === currentUser ? msg.to : msg.from;
+                        if (!allMessages[chatId]) allMessages[chatId] = [];
+                        allMessages[chatId].push(msg);
+                    });
+                    if (currentChatWith) renderMessages();
+                }
+                
+                if (data.type === 'new_message') {
+                    const msg = data.message;
                     const chatId = msg.from === currentUser ? msg.to : msg.from;
                     if (!allMessages[chatId]) allMessages[chatId] = [];
                     allMessages[chatId].push(msg);
-                });
-                if (currentChatWith) renderMessages();
-            }
-            
-            if (data.type === 'new_message') {
-                const msg = data.message;
-                const chatId = msg.from === currentUser ? msg.to : msg.from;
-                if (!allMessages[chatId]) allMessages[chatId] = [];
-                allMessages[chatId].push(msg);
-                if (currentChatWith === chatId) {
-                    renderMessages();
-                }
-            }
-            
-            if (data.type === 'message_read') {
-                for (const chatId in allMessages) {
-                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
-                    if (msg) {
-                        msg.read = true;
-                        msg.status = 'read';
-                        break;
+                    if (currentChatWith === chatId) renderMessages();
+                    if (msg.from !== currentUser && document.hidden) {
+                        new Notification('envex', { body: `${msg.from}: ${msg.text}` });
                     }
                 }
-                if (currentChatWith) renderMessages();
-            }
-            
-            if (data.type === 'message_edited') {
-                for (const chatId in allMessages) {
-                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
-                    if (msg) {
-                        msg.text = data.newText;
-                        msg.edited = true;
-                        break;
+                
+                if (data.type === 'message_read') {
+                    for (const chatId in allMessages) {
+                        const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                        if (msg) { msg.read = true; msg.status = 'read'; break; }
                     }
+                    if (currentChatWith) renderMessages();
                 }
-                if (currentChatWith) renderMessages();
-            }
-            
-            if (data.type === 'message_deleted') {
-                for (const chatId in allMessages) {
-                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
-                    if (msg) {
-                        msg.text = '[Удалено]';
-                        msg.deleted = true;
-                        break;
+                
+                if (data.type === 'message_edited') {
+                    for (const chatId in allMessages) {
+                        const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                        if (msg) { msg.text = data.newText; msg.edited = true; break; }
                     }
+                    if (currentChatWith) renderMessages();
                 }
-                if (currentChatWith) renderMessages();
-            }
-            
-            if (data.type === 'error') {
-                showError(data.text);
-                isConnecting = false;
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
-            }
+                
+                if (data.type === 'message_deleted') {
+                    for (const chatId in allMessages) {
+                        const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                        if (msg) { msg.text = '[Удалено]'; msg.deleted = true; break; }
+                    }
+                    if (currentChatWith) renderMessages();
+                }
+                
+                if (data.type === 'error') {
+                    showError(data.text);
+                    isConnecting = false;
+                    authSubmitBtn.disabled = false;
+                    authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+                }
+            } catch(e) { console.error('Ошибка парсинга:', e); }
         };
         
-        ws.onerror = () => {
-            showError('Ошибка подключения к серверу');
+        ws.onerror = (err) => {
+            console.error('WebSocket ошибка:', err);
+            showError('Ошибка подключения к серверу. Проверьте что сервер запущен.');
             isConnecting = false;
             authSubmitBtn.disabled = false;
             authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
         };
         
         ws.onclose = () => {
+            console.log('WebSocket закрыт');
             if (currentUser) {
                 setTimeout(() => {
-                    connectAndAuth('login', currentUser, 'saved', '');
+                    connectAndAuth('login', currentUser, '', '');
                 }, 3000);
             }
         };
@@ -631,9 +605,9 @@
         
         usersList.innerHTML = filtered.map(user => `
             <div class="user-item ${currentChatWith === user.username ? 'active' : ''}" onclick="selectUser('${user.username}')">
-                <div class="user-avatar-side">${user.name.charAt(0).toUpperCase()}</div>
+                <div class="user-avatar-side">${(user.name || user.username.substring(1)).charAt(0).toUpperCase()}</div>
                 <div class="user-info-side">
-                    <div class="user-name-side">${user.name}</div>
+                    <div class="user-name-side">${user.name || user.username.substring(1)}</div>
                     <div class="user-nick">${user.username}</div>
                     <div style="font-size: 10px; margin-top: 2px;">
                         <span class="status-dot ${user.online ? 'online' : 'offline'}"></span>
@@ -650,7 +624,7 @@
         inputArea.style.display = 'flex';
         
         const userData = allUsers.find(u => u.username === user);
-        chatUserName.textContent = userData?.name || user;
+        chatUserName.textContent = userData?.name || user.substring(1);
         chatUserStatus.innerHTML = userData?.online 
             ? '<span class="status-dot online"></span> онлайн'
             : '<span class="status-dot offline"></span> оффлайн';
@@ -678,7 +652,7 @@
             return `
                 <div class="message ${isSent ? 'sent' : 'received'}">
                     <div class="bubble">
-                        <div class="message-text">${msg.text}</div>
+                        <div class="message-text">${escapeHtml(msg.text)}</div>
                         <div class="message-meta">
                             <span>${msg.timeStr}</span>
                             ${statusIcon ? `<span>${statusIcon}</span>` : ''}
@@ -690,6 +664,19 @@
         }).join('');
         
         messagesList.scrollTop = messagesList.scrollHeight;
+        
+        // Отметить как прочитанные
+        msgs.forEach(msg => {
+            if (!msg.read && msg.from !== currentUser && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'read', messageId: msg.id }));
+            }
+        });
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     function sendMessage() {
@@ -705,7 +692,6 @@
         messageInput.value = '';
     }
     
-    // Переключение между входом и регистрацией
     authSwitch.onclick = () => {
         isLoginMode = !isLoginMode;
         if (isLoginMode) {
@@ -748,11 +734,10 @@
     };
     
     sendBtn.onclick = sendMessage;
-    messageInput.onkeypress = (e) => {
-        if (e.key === 'Enter') sendMessage();
-    };
-    
+    messageInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
     searchUsers.oninput = renderUsers;
+    
+    if (Notification.permission === 'default') Notification.requestPermission();
 </script>
 </body>
 </html>
