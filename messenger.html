@@ -100,6 +100,18 @@
             text-align: center;
         }
 
+        .logout-btn {
+            margin-top: 16px;
+            padding: 10px;
+            background: #2c2c35;
+            border: none;
+            border-radius: 12px;
+            color: #ef4444;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+        }
+
         .app {
             display: none;
             width: 100%;
@@ -403,6 +415,7 @@
                 <div class="search-box">
                     <input type="text" id="searchUsers" placeholder="🔍 Поиск по @username...">
                 </div>
+                <button id="logoutBtn" class="logout-btn">🚪 Выйти из аккаунта</button>
             </div>
             <div class="section-title">Пользователи</div>
             <div class="users-list" id="usersList">
@@ -437,6 +450,14 @@
     let isLoginMode = true;
     let isConnecting = false;
 
+    // Ключи для localStorage
+    const STORAGE_KEYS = {
+        SESSION: 'envex_session',
+        USERNAME: 'envex_username',
+        PASSWORD: 'envex_password',
+        NAME: 'envex_name'
+    };
+
     const authScreen = document.getElementById('authScreen');
     const appScreen = document.getElementById('appScreen');
     const authUsername = document.getElementById('authUsername');
@@ -456,6 +477,7 @@
     const inputArea = document.getElementById('inputArea');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     function showError(msg) {
         errorMsg.textContent = msg;
@@ -466,6 +488,60 @@
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
         return `${protocol}//${host}`;
+    }
+
+    // Сохранение сессии
+    function saveSession(username, password, name) {
+        localStorage.setItem(STORAGE_KEYS.SESSION, 'true');
+        localStorage.setItem(STORAGE_KEYS.USERNAME, username);
+        localStorage.setItem(STORAGE_KEYS.PASSWORD, password);
+        localStorage.setItem(STORAGE_KEYS.NAME, name);
+    }
+
+    // Очистка сессии (выход)
+    function clearSession() {
+        localStorage.removeItem(STORAGE_KEYS.SESSION);
+        localStorage.removeItem(STORAGE_KEYS.USERNAME);
+        localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+        localStorage.removeItem(STORAGE_KEYS.NAME);
+        
+        if (ws) {
+            ws.close();
+        }
+        
+        currentUser = null;
+        currentChatWith = null;
+        allUsers = [];
+        allMessages = {};
+        
+        authUsername.value = '';
+        authPassword.value = '';
+        authName.value = '';
+        
+        authScreen.style.display = 'flex';
+        appScreen.style.display = 'none';
+        
+        isLoginMode = true;
+        authSubmitBtn.textContent = 'Войти';
+        authSwitch.innerHTML = 'Нет аккаунта? <span>Создать</span>';
+        authName.style.display = 'none';
+    }
+
+    // Проверка сохранённой сессии
+    function checkSavedSession() {
+        const hasSession = localStorage.getItem(STORAGE_KEYS.SESSION);
+        if (hasSession === 'true') {
+            const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+            const savedPassword = localStorage.getItem(STORAGE_KEYS.PASSWORD);
+            const savedName = localStorage.getItem(STORAGE_KEYS.NAME);
+            
+            if (savedUsername && savedPassword) {
+                console.log('Найдена сохранённая сессия для:', savedUsername);
+                connectAndAuth('login', savedUsername, savedPassword, savedName);
+                return true;
+            }
+        }
+        return false;
     }
 
     function connectAndAuth(type, username, password, name) {
@@ -501,6 +577,9 @@
                     appScreen.style.display = 'block';
                     isConnecting = false;
                     authSubmitBtn.disabled = false;
+                    
+                    // Сохраняем сессию
+                    saveSession(username, password, data.name);
                 }
                 
                 if (data.type === 'registered') {
@@ -511,6 +590,9 @@
                     appScreen.style.display = 'block';
                     isConnecting = false;
                     authSubmitBtn.disabled = false;
+                    
+                    // Сохраняем сессию
+                    saveSession(username, password, data.name);
                 }
                 
                 if (data.type === 'users') {
@@ -568,6 +650,11 @@
                     isConnecting = false;
                     authSubmitBtn.disabled = false;
                     authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+                    
+                    // Если ошибка входа при сохранённой сессии — очищаем её
+                    if (data.text === 'Пользователь не найден' || data.text === 'Неверный пароль') {
+                        clearSession();
+                    }
                 }
             } catch(e) { console.error('Ошибка парсинга:', e); }
         };
@@ -584,7 +671,11 @@
             console.log('WebSocket закрыт');
             if (currentUser) {
                 setTimeout(() => {
-                    connectAndAuth('login', currentUser, '', '');
+                    const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+                    const savedPassword = localStorage.getItem(STORAGE_KEYS.PASSWORD);
+                    if (savedUsername && savedPassword) {
+                        connectAndAuth('login', savedUsername, savedPassword, '');
+                    }
                 }, 3000);
             }
         };
@@ -654,7 +745,7 @@
                     <div class="bubble">
                         <div class="message-text">${escapeHtml(msg.text)}</div>
                         <div class="message-meta">
-                            <span>${msg.timeStr}</span>
+                            <span>${msg.timeStr || msg.time}</span>
                             ${statusIcon ? `<span>${statusIcon}</span>` : ''}
                             ${msg.edited ? '<span>ред.</span>' : ''}
                         </div>
@@ -691,6 +782,13 @@
         
         messageInput.value = '';
     }
+    
+    // Выход из аккаунта
+    logoutBtn.onclick = () => {
+        if (confirm('Выйти из аккаунта? При следующем входе нужно будет ввести пароль.')) {
+            clearSession();
+        }
+    };
     
     authSwitch.onclick = () => {
         isLoginMode = !isLoginMode;
@@ -738,6 +836,9 @@
     searchUsers.oninput = renderUsers;
     
     if (Notification.permission === 'default') Notification.requestPermission();
+    
+    // При загрузке страницы проверяем сохранённую сессию
+    checkSavedSession();
 </script>
 </body>
 </html>
