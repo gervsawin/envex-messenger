@@ -18,7 +18,7 @@
             overflow: hidden;
         }
 
-        /* Авторизация */
+        /* АВТОРИЗАЦИЯ */
         .auth {
             position: fixed;
             inset: 0;
@@ -33,15 +33,14 @@
             background: #131318;
             border-radius: 32px;
             padding: 48px;
-            width: 400px;
-            text-align: center;
+            width: 420px;
         }
 
         .auth-card h1 {
             color: white;
             font-size: 48px;
             margin-bottom: 32px;
-            letter-spacing: -2px;
+            text-align: center;
             background: linear-gradient(135deg, #6366f1, #a855f7);
             -webkit-background-clip: text;
             background-clip: text;
@@ -50,13 +49,13 @@
 
         .auth-card input {
             width: 100%;
-            padding: 16px;
+            padding: 14px 16px;
             background: #1c1c24;
             border: 1px solid #2c2c35;
-            border-radius: 16px;
+            border-radius: 14px;
             color: white;
-            font-size: 16px;
-            margin-bottom: 16px;
+            font-size: 15px;
+            margin-bottom: 12px;
             outline: none;
         }
 
@@ -66,17 +65,30 @@
 
         .auth-card button {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: #6366f1;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             color: white;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+            font-size: 14px;
             cursor: pointer;
         }
 
-        /* Приложение */
+        .auth-switch span {
+            color: #6366f1;
+        }
+
+        /* ПРИЛОЖЕНИЕ */
         .app {
             display: none;
             width: 100%;
@@ -88,7 +100,7 @@
             height: 100%;
         }
 
-        /* Боковая панель */
+        /* БОКОВАЯ ПАНЕЛЬ */
         .sidebar {
             width: 320px;
             background: #131318;
@@ -132,7 +144,7 @@
         }
 
         .search-box {
-            padding: 12px 0;
+            margin-bottom: 12px;
         }
 
         .search-box input {
@@ -151,7 +163,7 @@
         }
 
         .section-title {
-            padding: 20px 24px 8px 24px;
+            padding: 16px 24px 8px 24px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
@@ -182,42 +194,51 @@
             border-left: 3px solid #6366f1;
         }
 
-        .user-avatar {
-            width: 44px;
-            height: 44px;
+        .user-avatar-side {
+            width: 40px;
+            height: 40px;
             background: #2c2c35;
-            border-radius: 22px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .user-info-side {
             flex: 1;
         }
 
-        .user-name {
+        .user-name-side {
             color: white;
             font-weight: 500;
-            font-size: 15px;
+            font-size: 14px;
         }
 
-        .user-status {
+        .user-nick {
             font-size: 11px;
+            color: #6b7280;
             margin-top: 2px;
         }
 
-        .user-status.online {
-            color: #10b981;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
         }
 
-        .user-status.offline {
-            color: #6b7280;
+        .status-dot.online {
+            background: #10b981;
         }
 
-        /* Чат */
+        .status-dot.offline {
+            background: #6b7280;
+        }
+
+        /* ЧАТ */
         .chat {
             flex: 1;
             display: flex;
@@ -268,7 +289,6 @@
         .bubble {
             padding: 10px 16px;
             border-radius: 18px;
-            position: relative;
             word-wrap: break-word;
         }
 
@@ -286,7 +306,6 @@
 
         .message-text {
             font-size: 14px;
-            line-height: 1.4;
         }
 
         .message-meta {
@@ -364,35 +383,23 @@
             color: #6b7280;
             padding: 40px;
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-        }
-
-        .status-dot.online {
-            background: #10b981;
-            box-shadow: 0 0 5px #10b981;
-        }
-
-        .status-dot.offline {
-            background: #6b7280;
-        }
     </style>
 </head>
 <body>
 
+<!-- ЭКРАН АВТОРИЗАЦИИ -->
 <div class="auth" id="authScreen">
     <div class="auth-card">
         <h1>envex</h1>
-        <input type="text" id="nickname" placeholder="Ваш никнейм" autocomplete="off">
-        <button id="loginBtn">Войти</button>
+        <input type="text" id="authUsername" placeholder="@username (например @alex)" autocomplete="off">
+        <input type="password" id="authPassword" placeholder="Пароль">
+        <input type="text" id="authName" placeholder="Ваше имя" style="display: none;">
+        <button id="authSubmitBtn">Войти</button>
+        <div class="auth-switch" id="authSwitch">Нет аккаунта? <span>Создать</span></div>
     </div>
 </div>
 
+<!-- ПРИЛОЖЕНИЕ -->
 <div class="app" id="appScreen">
     <div class="container">
         <div class="sidebar">
@@ -401,14 +408,14 @@
                     <div class="avatar" id="userAvatar">?</div>
                     <div class="user-info">
                         <h3 id="userName"></h3>
-                        <p>онлайн</p>
+                        <p id="userStatus">онлайн</p>
                     </div>
                 </div>
                 <div class="search-box">
-                    <input type="text" id="searchUsers" placeholder="🔍 Поиск по никнейму...">
+                    <input type="text" id="searchUsers" placeholder="🔍 Поиск по @username...">
                 </div>
             </div>
-            <div class="section-title">Пользователи онлайн</div>
+            <div class="section-title">Пользователи</div>
             <div class="users-list" id="usersList">
                 <div class="empty-state">Загрузка...</div>
             </div>
@@ -420,7 +427,7 @@
                 <p id="chatUserStatus"></p>
             </div>
             <div class="messages" id="messagesList">
-                <div class="empty-state">Выберите собеседника</div>
+                <div class="empty-state">👈 Выберите собеседника</div>
             </div>
             <div class="input-area" id="inputArea" style="display: none;">
                 <div class="input-wrapper">
@@ -436,13 +443,17 @@
     let ws = null;
     let currentUser = null;
     let currentChatWith = null;
-    let allUsers = []; // { nickname, online, lastSeen }
+    let allUsers = [];
     let allMessages = {};
 
+    // DOM элементы
     const authScreen = document.getElementById('authScreen');
     const appScreen = document.getElementById('appScreen');
-    const nicknameInput = document.getElementById('nickname');
-    const loginBtn = document.getElementById('loginBtn');
+    const authUsername = document.getElementById('authUsername');
+    const authPassword = document.getElementById('authPassword');
+    const authName = document.getElementById('authName');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authSwitch = document.getElementById('authSwitch');
     const userNameSpan = document.getElementById('userName');
     const userAvatar = document.getElementById('userAvatar');
     const usersList = document.getElementById('usersList');
@@ -455,18 +466,34 @@
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
 
+    let isLoginMode = true;
+
     function connect() {
-        ws = new WebSocket(`ws://${window.location.hostname}:3000`);
+        ws = new WebSocket(`wss://${window.location.host}/`);
         
         ws.onopen = () => {
-            ws.send(JSON.stringify({ type: 'login', nickname: currentUser }));
+            if (isLoginMode) {
+                ws.send(JSON.stringify({ type: 'login', username: currentUser, password: 'saved' }));
+            }
         };
         
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data);
             
             if (data.type === 'logged_in') {
-                console.log('Вошёл как', data.nickname);
+                currentUser = data.username;
+                userNameSpan.textContent = data.name;
+                userAvatar.textContent = data.name.charAt(0).toUpperCase();
+                authScreen.style.display = 'none';
+                appScreen.style.display = 'block';
+            }
+            
+            if (data.type === 'registered') {
+                currentUser = data.username;
+                userNameSpan.textContent = data.name;
+                userAvatar.textContent = data.name.charAt(0).toUpperCase();
+                authScreen.style.display = 'none';
+                appScreen.style.display = 'block';
             }
             
             if (data.type === 'users') {
@@ -488,48 +515,11 @@
                 const chatId = msg.from === currentUser ? msg.to : msg.from;
                 if (!allMessages[chatId]) allMessages[chatId] = [];
                 allMessages[chatId].push(msg);
-                
-                if (currentChatWith === chatId) {
-                    renderMessages();
-                }
-                
-                // Отметить как прочитанное
-                if (msg.from !== currentUser && currentChatWith === msg.from) {
-                    ws.send(JSON.stringify({ type: 'read', messageId: msg.id, from: msg.from }));
-                }
+                if (currentChatWith === chatId) renderMessages();
             }
             
-            if (data.type === 'message_read') {
-                const msg = findMessageById(data.messageId);
-                if (msg) {
-                    msg.read = true;
-                    msg.status = 'read';
-                    if (currentChatWith === (msg.from === currentUser ? msg.to : msg.from)) {
-                        renderMessages();
-                    }
-                }
-            }
-            
-            if (data.type === 'message_edited') {
-                const msg = findMessageById(data.messageId);
-                if (msg) {
-                    msg.text = data.newText;
-                    msg.edited = true;
-                    if (currentChatWith === (msg.from === currentUser ? msg.to : msg.from)) {
-                        renderMessages();
-                    }
-                }
-            }
-            
-            if (data.type === 'message_deleted') {
-                const msg = findMessageById(data.messageId);
-                if (msg) {
-                    msg.text = '[Удалено]';
-                    msg.deleted = true;
-                    if (currentChatWith === (msg.from === currentUser ? msg.to : msg.from)) {
-                        renderMessages();
-                    }
-                }
+            if (data.type === 'error') {
+                alert(data.text);
             }
         };
         
@@ -538,20 +528,12 @@
         };
     }
     
-    function findMessageById(id) {
-        for (const chatId in allMessages) {
-            const msg = allMessages[chatId].find(m => m.id === id);
-            if (msg) return msg;
-        }
-        return null;
-    }
-    
     function renderUsers() {
         const searchTerm = searchUsers.value.toLowerCase();
-        let filtered = allUsers.filter(u => u.nickname !== currentUser);
+        let filtered = allUsers.filter(u => u.username !== currentUser);
         
         if (searchTerm) {
-            filtered = filtered.filter(u => u.nickname.toLowerCase().includes(searchTerm));
+            filtered = filtered.filter(u => u.username.toLowerCase().includes(searchTerm));
         }
         
         if (filtered.length === 0) {
@@ -560,11 +542,12 @@
         }
         
         usersList.innerHTML = filtered.map(user => `
-            <div class="user-item ${currentChatWith === user.nickname ? 'active' : ''}" onclick="selectUser('${user.nickname}')">
-                <div class="user-avatar">${user.nickname.charAt(0).toUpperCase()}</div>
+            <div class="user-item ${currentChatWith === user.username ? 'active' : ''}" onclick="selectUser('${user.username}')">
+                <div class="user-avatar-side">${user.name.charAt(0).toUpperCase()}</div>
                 <div class="user-info-side">
-                    <div class="user-name">${user.nickname}</div>
-                    <div class="user-status ${user.online ? 'online' : 'offline'}">
+                    <div class="user-name-side">${user.name}</div>
+                    <div class="user-nick">${user.username}</div>
+                    <div style="font-size: 10px; margin-top: 2px;">
                         <span class="status-dot ${user.online ? 'online' : 'offline'}"></span>
                         ${user.online ? 'онлайн' : 'оффлайн'}
                     </div>
@@ -578,8 +561,8 @@
         chatHeader.style.display = 'block';
         inputArea.style.display = 'flex';
         
-        const userData = allUsers.find(u => u.nickname === user);
-        chatUserName.textContent = user;
+        const userData = allUsers.find(u => u.username === user);
+        chatUserName.textContent = userData?.name || user;
         chatUserStatus.innerHTML = userData?.online 
             ? '<span class="status-dot online"></span> онлайн'
             : '<span class="status-dot offline"></span> оффлайн';
@@ -591,7 +574,7 @@
     function renderMessages() {
         const msgs = allMessages[currentChatWith] || [];
         if (msgs.length === 0) {
-            messagesList.innerHTML = '<div class="empty-state">💬 Нет сообщений. Напишите что-нибудь.</div>';
+            messagesList.innerHTML = '<div class="empty-state">💬 Нет сообщений</div>';
             return;
         }
         
@@ -605,20 +588,14 @@
             }
             
             return `
-                <div class="message ${isSent ? 'sent' : 'received'}" data-id="${msg.id}">
+                <div class="message ${isSent ? 'sent' : 'received'}">
                     <div class="bubble">
                         <div class="message-text">${msg.text}</div>
                         <div class="message-meta">
-                            <span>${msg.timeStr || new Date(msg.time).toLocaleTimeString()}</span>
+                            <span>${msg.timeStr}</span>
                             ${statusIcon ? `<span>${statusIcon}</span>` : ''}
                             ${msg.edited ? '<span>ред.</span>' : ''}
                         </div>
-                        ${isSent && !msg.deleted ? `
-                        <div class="message-actions">
-                            <div class="message-action" onclick="editMessage(${msg.id})">✎</div>
-                            <div class="message-action" onclick="deleteMessage(${msg.id})">✕</div>
-                        </div>
-                        ` : ''}
                     </div>
                 </div>
             `;
@@ -626,19 +603,6 @@
         
         messagesList.scrollTop = messagesList.scrollHeight;
     }
-    
-    window.editMessage = (messageId) => {
-        const newText = prompt('Редактировать сообщение:');
-        if (newText && newText.trim()) {
-            ws.send(JSON.stringify({ type: 'edit', messageId, newText: newText.trim() }));
-        }
-    };
-    
-    window.deleteMessage = (messageId) => {
-        if (confirm('Удалить сообщение?')) {
-            ws.send(JSON.stringify({ type: 'delete', messageId }));
-        }
-    };
     
     function sendMessage() {
         const text = messageInput.value.trim();
@@ -653,28 +617,57 @@
         messageInput.value = '';
     }
     
-    searchUsers.oninput = () => {
-        renderUsers();
+    // Переключение между входом и регистрацией
+    authSwitch.onclick = () => {
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            authSubmitBtn.textContent = 'Войти';
+            authSwitch.innerHTML = 'Нет аккаунта? <span>Создать</span>';
+            authName.style.display = 'none';
+        } else {
+            authSubmitBtn.textContent = 'Создать аккаунт';
+            authSwitch.innerHTML = 'Уже есть аккаунт? <span>Войти</span>';
+            authName.style.display = 'block';
+        }
     };
     
-    loginBtn.onclick = () => {
-        const nick = nicknameInput.value.trim();
-        if (!nick) {
-            alert('Введите никнейм');
+    authSubmitBtn.onclick = () => {
+        const username = authUsername.value.trim();
+        const password = authPassword.value;
+        const name = authName.value.trim();
+        
+        if (!username || !password) {
+            alert('Заполните все поля');
             return;
         }
-        currentUser = nick;
-        userNameSpan.textContent = nick;
-        userAvatar.textContent = nick.charAt(0).toUpperCase();
-        authScreen.style.display = 'none';
-        appScreen.style.display = 'block';
+        
+        if (!username.startsWith('@')) {
+            alert('Username должен начинаться с @ (например @alex)');
+            return;
+        }
+        
+        if (!isLoginMode && !name) {
+            alert('Введите ваше имя');
+            return;
+        }
+        
         connect();
+        
+        setTimeout(() => {
+            if (isLoginMode) {
+                ws.send(JSON.stringify({ type: 'login', username, password }));
+            } else {
+                ws.send(JSON.stringify({ type: 'register', username, password, name }));
+            }
+        }, 200);
     };
     
     sendBtn.onclick = sendMessage;
     messageInput.onkeypress = (e) => {
         if (e.key === 'Enter') sendMessage();
     };
+    
+    searchUsers.oninput = renderUsers;
 </script>
 </body>
 </html>
