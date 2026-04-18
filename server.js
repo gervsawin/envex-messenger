@@ -11,29 +11,59 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 app.use(express.static(__dirname));
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'messenger.html'));
 });
 
 // ============ ХРАНИЛИЩА ============
-const users = new Map(); // @username -> { password, name, online, ws }
+const users = new Map(); // @username -> { password, name, online, ws, avatar }
+const groups = new Map(); // groupId -> { name, members, owner, avatar, createdAt }
 let messages = [];
 let nextId = 1;
 
-// Загрузка сообщений из файла
+// Загрузка данных
+try {
+    const savedUsers = JSON.parse(fs.readFileSync('./users.json', 'utf8'));
+    for (const [username, data] of Object.entries(savedUsers)) {
+        users.set(username, { ...data, ws: null });
+    }
+} catch(e) {}
+
+try {
+    const savedGroups = JSON.parse(fs.readFileSync('./groups.json', 'utf8'));
+    for (const [groupId, data] of Object.entries(savedGroups)) {
+        groups.set(groupId, data);
+    }
+} catch(e) {}
+
 try {
     const saved = JSON.parse(fs.readFileSync('./messages.json', 'utf8'));
     messages = saved;
     nextId = (messages[messages.length - 1]?.id || 0) + 1;
 } catch(e) {}
 
-// Сохранение сообщений
-function saveMessages() {
-    fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-500)), 'utf8');
+function saveUsers() {
+    const toSave = {};
+    for (const [username, data] of users.entries()) {
+        toSave[username] = { password: data.password, name: data.name, online: false, lastSeen: data.lastSeen, avatar: data.avatar };
+    }
+    fs.writeFileSync('./users.json', JSON.stringify(toSave, null, 2), 'utf8');
 }
 
-// ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
+function saveGroups() {
+    const toSave = {};
+    for (const [groupId, data] of groups.entries()) {
+        toSave[groupId] = { name: data.name, members: data.members, owner: data.owner, avatar: data.avatar, createdAt: data.createdAt };
+    }
+    fs.writeFileSync('./groups.json', JSON.stringify(toSave, null, 2), 'utf8');
+}
+
+function saveMessages() {
+    fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-1000), null, 2), 'utf8');
+}
+
 function broadcastToAll(data, excludeSocket = null) {
     wss.clients.forEach(client => {
         if (client !== excludeSocket && client.readyState === WebSocket.OPEN) {
@@ -42,28 +72,58 @@ function broadcastToAll(data, excludeSocket = null) {
     });
 }
 
+function broadcastToUser(username, data) {
+    const user = users.get(username);
+    if (user && user.ws && user.ws.readyState === WebSocket.OPEN) {
+        user.ws.send(JSON.stringify(data));
+    }
+}
+
+function broadcastToGroup(groupId, data, excludeUser = null) {
+    const group = groups.get(groupId);
+    if (!group) return;
+    group.members.forEach(member => {
+        if (member !== excludeUser) {
+            broadcastToUser(member, data);
+        }
+    });
+}
+
 function broadcastUserList() {
     const list = Array.from(users.entries()).map(([username, data]) => ({
         username: username,
         name: data.name,
-        online: data.online
+        online: data.online,
+        lastSeen: data.lastSeen,
+        avatar: data.avatar
     }));
     broadcastToAll({ type: 'users', users: list });
 }
 
-// ============ WEBSOCKET ============
+function broadcastGroupList() {
+    const list = Array.from(groups.entries()).map(([groupId, data]) => ({
+        id: groupId,
+        name: data.name,
+        members: data.members,
+        owner: data.owner,
+        avatar: data.avatar,
+        createdAt: data.createdAt
+    }));
+    broadcastToAll({ type: 'groups', groups: list });
+}
+
 wss.on('connection', (ws) => {
-    console.log('✅ Новый клиент подключился');
+    console.log('✅ Новый клиент');
     let currentUser = null;
     
     ws.on('message', (raw) => {
         try {
             const data = JSON.parse(raw);
-            console.log('📨 Получено:', data.type);
+            console.log('📨', data.type);
             
             // === РЕГИСТРАЦИЯ ===
             if (data.type === 'register') {
-                const { username, password, name } = data;
+                const { username, password, name, avatar } = data;
                 
                 if (!username.startsWith('@')) {
                     ws.send(JSON.stringify({ type: 'error', text: 'Username должен начинаться с @' }));
@@ -79,34 +139,29 @@ wss.on('connection', (ws) => {
                     password: password,
                     name: name || username.substring(1),
                     online: true,
-                    ws: ws
+                    ws: ws,
+                    lastSeen: Date.now(),
+                    avatar: avatar || null
                 });
                 currentUser = username;
                 
-                ws.send(JSON.stringify({
-                    type: 'registered',
-                    username: username,
-                    name: users.get(username).name
-                }));
+                ws.send(JSON.stringify({ type: 'registered', username, name: users.get(username).name, avatar }));
                 
-                // Отправляем историю сообщений
-                const userMessages = messages.filter(m =>
-                    (m.from === username || m.to === username)
+                const userMessages = messages.filter(m => 
+                    (!m.isGroup && (m.from === username || m.to === username)) ||
+                    (m.isGroup && groups.get(m.to)?.members?.includes(username))
                 );
-                ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-100) }));
+                ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
                 
                 broadcastUserList();
+                broadcastGroupList();
+                saveUsers();
                 return;
             }
             
             // === ЛОГИН ===
             if (data.type === 'login') {
                 const { username, password } = data;
-                
-                if (!username.startsWith('@')) {
-                    ws.send(JSON.stringify({ type: 'error', text: 'Username должен начинаться с @' }));
-                    return;
-                }
                 
                 const user = users.get(username);
                 if (!user) {
@@ -121,32 +176,38 @@ wss.on('connection', (ws) => {
                 
                 user.ws = ws;
                 user.online = true;
+                user.lastSeen = Date.now();
                 currentUser = username;
                 
-                ws.send(JSON.stringify({
-                    type: 'logged_in',
-                    username: username,
-                    name: user.name
-                }));
+                ws.send(JSON.stringify({ type: 'logged_in', username, name: user.name, avatar: user.avatar }));
                 
-                // Отправляем историю сообщений
-                const userMessages = messages.filter(m =>
-                    (m.from === username || m.to === username)
+                const userMessages = messages.filter(m => 
+                    (!m.isGroup && (m.from === username || m.to === username)) ||
+                    (m.isGroup && groups.get(m.to)?.members?.includes(username))
                 );
-                ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-100) }));
+                ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
                 
                 broadcastUserList();
+                broadcastGroupList();
+                saveUsers();
                 return;
             }
             
-            // === ОТПРАВКА СООБЩЕНИЯ ===
+            // === ОБНОВЛЕНИЕ АВАТАРА ===
+            if (data.type === 'update_avatar') {
+                const { avatar } = data;
+                const user = users.get(currentUser);
+                if (user) {
+                    user.avatar = avatar;
+                    saveUsers();
+                    broadcastUserList();
+                }
+                return;
+            }
+            
+            // === ЛИЧНОЕ СООБЩЕНИЕ ===
             if (data.type === 'message') {
                 const { to, text } = data;
-                
-                if (!to.startsWith('@')) {
-                    ws.send(JSON.stringify({ type: 'error', text: 'Получатель должен начинаться с @' }));
-                    return;
-                }
                 
                 const msg = {
                     id: nextId++,
@@ -154,11 +215,12 @@ wss.on('connection', (ws) => {
                     to: to,
                     text: text,
                     time: Date.now(),
-                    timeStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                     status: 'sent',
                     read: false,
                     edited: false,
-                    deleted: false
+                    deleted: false,
+                    isGroup: false
                 };
                 messages.push(msg);
                 saveMessages();
@@ -173,17 +235,44 @@ wss.on('connection', (ws) => {
                 }
             }
             
+            // === ГРУППОВОЕ СООБЩЕНИЕ ===
+            if (data.type === 'group_message') {
+                const { groupId, text } = data;
+                
+                const group = groups.get(groupId);
+                if (!group || !group.members.includes(currentUser)) {
+                    ws.send(JSON.stringify({ type: 'error', text: 'Нет доступа к группе' }));
+                    return;
+                }
+                
+                const msg = {
+                    id: nextId++,
+                    from: currentUser,
+                    to: groupId,
+                    text: text,
+                    time: Date.now(),
+                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                    status: 'sent',
+                    read: false,
+                    edited: false,
+                    deleted: false,
+                    isGroup: true
+                };
+                messages.push(msg);
+                saveMessages();
+                
+                broadcastToGroup(groupId, { type: 'new_message', message: msg }, currentUser);
+                ws.send(JSON.stringify({ type: 'new_message', message: msg }));
+            }
+            
             // === ПРОЧИТАНО ===
             if (data.type === 'read') {
                 const { messageId } = data;
                 const msg = messages.find(m => m.id === messageId);
-                if (msg && msg.to === currentUser && !msg.read) {
+                if (msg && !msg.read && msg.to === currentUser) {
                     msg.read = true;
                     msg.status = 'read';
-                    const sender = users.get(msg.from);
-                    if (sender && sender.ws && sender.ws.readyState === WebSocket.OPEN) {
-                        sender.ws.send(JSON.stringify({ type: 'message_read', messageId }));
-                    }
+                    broadcastToUser(msg.from, { type: 'message_read', messageId });
                     saveMessages();
                 }
             }
@@ -195,9 +284,10 @@ wss.on('connection', (ws) => {
                 if (msg && msg.from === currentUser) {
                     msg.text = newText;
                     msg.edited = true;
-                    const recipient = users.get(msg.to);
-                    if (recipient && recipient.ws && recipient.ws.readyState === WebSocket.OPEN) {
-                        recipient.ws.send(JSON.stringify({ type: 'message_edited', messageId, newText }));
+                    if (msg.isGroup) {
+                        broadcastToGroup(msg.to, { type: 'message_edited', messageId, newText });
+                    } else {
+                        broadcastToUser(msg.to, { type: 'message_edited', messageId, newText });
                     }
                     saveMessages();
                 }
@@ -210,33 +300,51 @@ wss.on('connection', (ws) => {
                 if (msg && msg.from === currentUser) {
                     msg.text = '[Удалено]';
                     msg.deleted = true;
-                    const recipient = users.get(msg.to);
-                    if (recipient && recipient.ws && recipient.ws.readyState === WebSocket.OPEN) {
-                        recipient.ws.send(JSON.stringify({ type: 'message_deleted', messageId }));
+                    if (msg.isGroup) {
+                        broadcastToGroup(msg.to, { type: 'message_deleted', messageId });
+                    } else {
+                        broadcastToUser(msg.to, { type: 'message_deleted', messageId });
                     }
                     saveMessages();
                 }
             }
             
-        } catch(e) {
-            console.error('Ошибка:', e);
-        }
+            // === СОЗДАНИЕ ГРУППЫ ===
+            if (data.type === 'create_group') {
+                const { name, members, avatar } = data;
+                const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                
+                groups.set(groupId, {
+                    name: name,
+                    members: [currentUser, ...members],
+                    owner: currentUser,
+                    avatar: avatar || null,
+                    createdAt: Date.now()
+                });
+                
+                broadcastGroupList();
+                saveGroups();
+                
+                ws.send(JSON.stringify({ type: 'group_created', groupId, name }));
+            }
+            
+        } catch(e) { console.error('Ошибка:', e); }
     });
     
     ws.on('close', () => {
-        console.log('❌ Клиент отключился');
         if (currentUser) {
             const user = users.get(currentUser);
             if (user) {
                 user.online = false;
+                user.lastSeen = Date.now();
                 user.ws = null;
             }
             broadcastUserList();
+            saveUsers();
         }
     });
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Сервер запущен: http://localhost:${PORT}`);
-    console.log(`📡 WebSocket работает на ws://localhost:${PORT}`);
+    console.log(`✅ Сервер: http://localhost:${PORT}`);
 });
