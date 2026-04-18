@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>envex — мессенджер</title>
+    <title>envex</title>
     <style>
         * {
             margin: 0;
@@ -125,7 +125,6 @@
             height: 100%;
         }
 
-        /* На телефоне — одна колонка */
         .container {
             display: flex;
             height: 100%;
@@ -404,7 +403,6 @@
             background-position: center;
         }
 
-        /* Switch */
         .switch {
             position: relative;
             display: inline-block;
@@ -436,7 +434,6 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Телефон */
         @media (max-width: 768px) {
             .chats-panel {
                 position: fixed;
@@ -483,28 +480,26 @@
 
 <div class="app" id="appScreen">
     <div class="container">
-        <!-- Панель списка чатов -->
         <div class="chats-panel" id="chatsPanel">
             <div class="panel-header">
                 <div class="current-user">
                     <div class="avatar" id="userAvatar" onclick="openAvatarModal()">?</div>
                     <div class="user-info">
                         <h3 id="userName"></h3>
-                        <p>● онлайн</p>
+                        <p>онлайн</p>
                     </div>
                 </div>
                 <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
                 <div class="action-row">
-                    <button class="action-btn" id="createGroupBtn">+ Группа</button>
-                    <button class="action-btn" id="settingsBtn">⚙️</button>
-                    <button class="action-btn logout-btn" id="logoutBtn">🚪</button>
+                    <button class="action-btn" id="createGroupBtn">Создать группу</button>
+                    <button class="action-btn" id="settingsBtn">Настройки</button>
+                    <button class="action-btn logout-btn" id="logoutBtn">Выйти</button>
                 </div>
             </div>
             <div class="section-title">Чаты</div>
             <div class="chats-list" id="chatsList"></div>
         </div>
         
-        <!-- Панель чата -->
         <div class="chat-panel hide" id="chatPanel">
             <div class="chat-header">
                 <div class="back-btn" id="backBtn">←</div>
@@ -514,12 +509,12 @@
                 </div>
             </div>
             <div class="messages" id="messagesList">
-                <div class="empty-state">✨ Выберите чат</div>
+                <div class="empty-state">Выберите чат</div>
             </div>
             <div class="input-area">
                 <div class="input-wrapper">
                     <input type="text" id="messageInput" placeholder="Сообщение">
-                    <button id="sendBtn">➤</button>
+                    <button id="sendBtn">→</button>
                 </div>
             </div>
         </div>
@@ -530,14 +525,14 @@
     <div class="modal-content">
         <div class="modal-header">Настройки</div>
         <div class="setting-row">
-            <span>🌙 Тёмный режим</span>
+            <span>Тёмный режим</span>
             <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
         </div>
         <div class="setting-row">
-            <span>🔔 Уведомления</span>
+            <span>Уведомления</span>
             <label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label>
         </div>
-        <button id="closeSettingsBtn" class="auth-btn" style="margin-top: 20px;">Готово</button>
+        <button id="closeSettingsBtn" class="auth-btn" style="margin-top: 20px;">Закрыть</button>
     </div>
 </div>
 
@@ -546,7 +541,7 @@
         <div class="modal-header">Фото профиля</div>
         <div class="avatar-preview" id="avatarPreview"></div>
         <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-        <button id="uploadAvatarBtn" class="auth-btn" style="margin-bottom: 10px;">📸 Загрузить</button>
+        <button id="uploadAvatarBtn" class="auth-btn" style="margin-bottom: 10px;">Загрузить фото</button>
         <button id="closeAvatarModal" class="auth-btn" style="background: var(--bg-tertiary); color: var(--text);">Отмена</button>
     </div>
 </div>
@@ -554,7 +549,7 @@
 <div id="groupModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">Новая группа</div>
-        <input type="text" id="groupNameInput" class="auth-input" placeholder="Название">
+        <input type="text" id="groupNameInput" class="auth-input" placeholder="Название группы">
         <div class="section-title" style="margin: 16px 0 8px 0;">Участники</div>
         <div id="groupMembersList" style="max-height: 200px; overflow-y: auto;"></div>
         <button id="createGroupConfirm" class="auth-btn" style="margin-top: 20px;">Создать</button>
@@ -624,7 +619,6 @@
         ws.onmessage = (e) => {
             try {
                 const data = JSON.parse(e.data);
-                console.log('📨', data.type);
                 
                 if (data.type === 'logged_in' || data.type === 'registered') {
                     currentUser = data.username;
@@ -713,18 +707,18 @@
         
         const container = document.getElementById('chatsList');
         if (chats.length === 0) {
-            container.innerHTML = '<div class="empty-state">👀 Никого не найдено</div>';
+            container.innerHTML = '<div class="empty-state">Никого не найдено</div>';
             return;
         }
         
         container.innerHTML = chats.map(chat => `
             <div class="chat-item ${currentChat && currentChat.id === chat.id ? 'active' : ''}" onclick="selectChat('${chat.type}', '${chat.id}', '${chat.name.replace(/'/g, "\\'")}')">
                 <div class="chat-avatar" style="${chat.avatar ? `background-image: url(${chat.avatar}); background-size: cover;` : ''}">
-                    ${!chat.avatar ? (chat.type === 'user' ? (chat.name?.charAt(0) || 'U').toUpperCase() : '👥') : ''}
+                    ${!chat.avatar ? (chat.type === 'user' ? (chat.name?.charAt(0) || 'U').toUpperCase() : 'G') : ''}
                 </div>
                 <div class="chat-info">
                     <div class="chat-name">${chat.name}</div>
-                    <div class="chat-preview">${chat.type === 'user' ? chat.id : (chat.online !== undefined ? (chat.online ? '● онлайн' : 'оффлайн') : 'группа')}</div>
+                    <div class="chat-preview">${chat.type === 'user' ? chat.id : (chat.online !== undefined ? (chat.online ? 'онлайн' : 'оффлайн') : 'группа')}</div>
                 </div>
             </div>
         `).join('');
@@ -736,12 +730,11 @@
         
         if (type === 'user') {
             const user = allUsers.find(u => u.username === id);
-            document.getElementById('chatStatus').innerHTML = user?.online ? '● онлайн' : 'оффлайн';
+            document.getElementById('chatStatus').innerHTML = user?.online ? 'онлайн' : 'оффлайн';
         } else {
             document.getElementById('chatStatus').innerHTML = 'групповой чат';
         }
         
-        // На телефоне: прячем список чатов, показываем чат
         if (window.innerWidth <= 768) {
             document.getElementById('chatsPanel').classList.add('hide');
             document.getElementById('chatPanel').classList.remove('hide');
@@ -756,7 +749,7 @@
         const container = document.getElementById('messagesList');
         
         if (msgs.length === 0) {
-            container.innerHTML = '<div class="empty-state">💬 Нет сообщений</div>';
+            container.innerHTML = '<div class="empty-state">Нет сообщений</div>';
             return;
         }
         
@@ -798,9 +791,9 @@
         if (!text || !currentChat || !ws || ws.readyState !== WebSocket.OPEN) return;
         
         if (currentChat.type === 'user') {
-            ws.send(JSON.stringify({ type: 'message', to: currentChat.id, text }));
+            ws.send(JSON.stringify({ type: 'message', to: currentChat.id, text: text }));
         } else {
-            ws.send(JSON.stringify({ type: 'group_message', groupId: currentChat.id, text }));
+            ws.send(JSON.stringify({ type: 'group_message', groupId: currentChat.id, text: text }));
         }
         input.value = '';
     }
@@ -808,7 +801,7 @@
     function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
     
     function logout() {
-        if (confirm('Выйти?')) {
+        if (confirm('Выйти из аккаунта?')) {
             clearUserData();
             if (ws) ws.close();
             currentUser = null;
@@ -835,8 +828,8 @@
         }
     }
     
-    // Модалки
     function openAvatarModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+    
     function openGroupModal() {
         const listDiv = document.getElementById('groupMembersList');
         listDiv.innerHTML = allUsers.filter(u => u.username !== currentUser).map(user => `
@@ -848,7 +841,6 @@
         document.getElementById('groupModal').style.display = 'flex';
     }
     
-    // Инициализация
     document.getElementById('authSwitch').onclick = () => {
         isLoginMode = !isLoginMode;
         const btn = document.getElementById('authSubmitBtn');
@@ -869,9 +861,9 @@
         const username = document.getElementById('authUsername').value.trim();
         const password = document.getElementById('authPassword').value;
         const name = document.getElementById('authName').value.trim();
-        if (!username || !password) return showError('Заполните поля');
+        if (!username || !password) return showError('Заполните все поля');
         if (!username.startsWith('@')) return showError('Username должен начинаться с @');
-        if (!isLoginMode && !name) return showError('Введите имя');
+        if (!isLoginMode && !name) return showError('Введите ваше имя');
         connectAndAuth(isLoginMode ? 'login' : 'register', username, password, name);
     };
     
@@ -894,10 +886,10 @@
     
     document.getElementById('createGroupConfirm').onclick = () => {
         const name = document.getElementById('groupNameInput').value.trim();
-        if (!name) return alert('Введите название');
+        if (!name) return alert('Введите название группы');
         const members = Array.from(document.querySelectorAll('.group-checkbox:checked')).map(cb => cb.value);
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'create_group', name, members }));
+            ws.send(JSON.stringify({ type: 'create_group', name: name, members: members }));
         }
         document.getElementById('groupModal').style.display = 'none';
         document.getElementById('groupNameInput').value = '';
