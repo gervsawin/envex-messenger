@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>envex | Мессенджер</title>
     <style>
         * {
@@ -76,6 +76,11 @@
             margin-top: 8px;
         }
 
+        .auth-card button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .auth-switch {
             text-align: center;
             margin-top: 20px;
@@ -86,6 +91,13 @@
 
         .auth-switch span {
             color: #6366f1;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 8px;
+            text-align: center;
         }
 
         /* ПРИЛОЖЕНИЕ */
@@ -383,6 +395,12 @@
             color: #6b7280;
             padding: 40px;
         }
+
+        .loading {
+            text-align: center;
+            color: #6366f1;
+            padding: 40px;
+        }
     </style>
 </head>
 <body>
@@ -396,6 +414,7 @@
         <input type="text" id="authName" placeholder="Ваше имя" style="display: none;">
         <button id="authSubmitBtn">Войти</button>
         <div class="auth-switch" id="authSwitch">Нет аккаунта? <span>Создать</span></div>
+        <div class="error-msg" id="errorMsg"></div>
     </div>
 </div>
 
@@ -417,7 +436,7 @@
             </div>
             <div class="section-title">Пользователи</div>
             <div class="users-list" id="usersList">
-                <div class="empty-state">Загрузка...</div>
+                <div class="loading">Загрузка...</div>
             </div>
         </div>
         
@@ -445,6 +464,8 @@
     let currentChatWith = null;
     let allUsers = [];
     let allMessages = {};
+    let isLoginMode = true;
+    let isConnecting = false;
 
     // DOM элементы
     const authScreen = document.getElementById('authScreen');
@@ -454,6 +475,7 @@
     const authName = document.getElementById('authName');
     const authSubmitBtn = document.getElementById('authSubmitBtn');
     const authSwitch = document.getElementById('authSwitch');
+    const errorMsg = document.getElementById('errorMsg');
     const userNameSpan = document.getElementById('userName');
     const userAvatar = document.getElementById('userAvatar');
     const usersList = document.getElementById('usersList');
@@ -466,14 +488,26 @@
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
 
-    let isLoginMode = true;
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        setTimeout(() => { errorMsg.textContent = ''; }, 3000);
+    }
 
-    function connect() {
-        ws = new WebSocket(`wss://${window.location.host}/`);
+    function connectAndAuth(type, username, password, name) {
+        if (isConnecting) return;
+        isConnecting = true;
+        authSubmitBtn.disabled = true;
+        authSubmitBtn.textContent = 'Подключение...';
+        
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host;
+        ws = new WebSocket(`${protocol}//${host}`);
         
         ws.onopen = () => {
-            if (isLoginMode) {
-                ws.send(JSON.stringify({ type: 'login', username: currentUser, password: 'saved' }));
+            if (type === 'login') {
+                ws.send(JSON.stringify({ type: 'login', username, password }));
+            } else {
+                ws.send(JSON.stringify({ type: 'register', username, password, name }));
             }
         };
         
@@ -486,6 +520,7 @@
                 userAvatar.textContent = data.name.charAt(0).toUpperCase();
                 authScreen.style.display = 'none';
                 appScreen.style.display = 'block';
+                isConnecting = false;
             }
             
             if (data.type === 'registered') {
@@ -494,6 +529,7 @@
                 userAvatar.textContent = data.name.charAt(0).toUpperCase();
                 authScreen.style.display = 'none';
                 appScreen.style.display = 'block';
+                isConnecting = false;
             }
             
             if (data.type === 'users') {
@@ -515,16 +551,68 @@
                 const chatId = msg.from === currentUser ? msg.to : msg.from;
                 if (!allMessages[chatId]) allMessages[chatId] = [];
                 allMessages[chatId].push(msg);
-                if (currentChatWith === chatId) renderMessages();
+                if (currentChatWith === chatId) {
+                    renderMessages();
+                }
+            }
+            
+            if (data.type === 'message_read') {
+                for (const chatId in allMessages) {
+                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                    if (msg) {
+                        msg.read = true;
+                        msg.status = 'read';
+                        break;
+                    }
+                }
+                if (currentChatWith) renderMessages();
+            }
+            
+            if (data.type === 'message_edited') {
+                for (const chatId in allMessages) {
+                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                    if (msg) {
+                        msg.text = data.newText;
+                        msg.edited = true;
+                        break;
+                    }
+                }
+                if (currentChatWith) renderMessages();
+            }
+            
+            if (data.type === 'message_deleted') {
+                for (const chatId in allMessages) {
+                    const msg = allMessages[chatId].find(m => m.id === data.messageId);
+                    if (msg) {
+                        msg.text = '[Удалено]';
+                        msg.deleted = true;
+                        break;
+                    }
+                }
+                if (currentChatWith) renderMessages();
             }
             
             if (data.type === 'error') {
-                alert(data.text);
+                showError(data.text);
+                isConnecting = false;
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
             }
         };
         
+        ws.onerror = () => {
+            showError('Ошибка подключения к серверу');
+            isConnecting = false;
+            authSubmitBtn.disabled = false;
+            authSubmitBtn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+        };
+        
         ws.onclose = () => {
-            setTimeout(connect, 3000);
+            if (currentUser) {
+                setTimeout(() => {
+                    connectAndAuth('login', currentUser, 'saved', '');
+                }, 3000);
+            }
         };
     }
     
@@ -606,7 +694,7 @@
     
     function sendMessage() {
         const text = messageInput.value.trim();
-        if (!text || !currentChatWith) return;
+        if (!text || !currentChatWith || !ws || ws.readyState !== WebSocket.OPEN) return;
         
         ws.send(JSON.stringify({
             type: 'message',
@@ -629,6 +717,7 @@
             authSwitch.innerHTML = 'Уже есть аккаунт? <span>Войти</span>';
             authName.style.display = 'block';
         }
+        errorMsg.textContent = '';
     };
     
     authSubmitBtn.onclick = () => {
@@ -637,29 +726,25 @@
         const name = authName.value.trim();
         
         if (!username || !password) {
-            alert('Заполните все поля');
+            showError('Заполните все поля');
             return;
         }
         
         if (!username.startsWith('@')) {
-            alert('Username должен начинаться с @ (например @alex)');
+            showError('Username должен начинаться с @ (например @alex)');
             return;
         }
         
         if (!isLoginMode && !name) {
-            alert('Введите ваше имя');
+            showError('Введите ваше имя');
             return;
         }
         
-        connect();
-        
-        setTimeout(() => {
-            if (isLoginMode) {
-                ws.send(JSON.stringify({ type: 'login', username, password }));
-            } else {
-                ws.send(JSON.stringify({ type: 'register', username, password, name }));
-            }
-        }, 200);
+        if (isLoginMode) {
+            connectAndAuth('login', username, password, '');
+        } else {
+            connectAndAuth('register', username, password, name);
+        }
     };
     
     sendBtn.onclick = sendMessage;
