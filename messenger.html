@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ь<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -293,7 +293,7 @@
             transition: background 0.15s;
         }
 
-        .chat-item:active {
+        .chat-item:hover {
             background: var(--hover);
         }
 
@@ -444,7 +444,7 @@
             cursor: pointer;
         }
 
-        .setting-row:active {
+        .setting-row:hover {
             background: var(--hover);
         }
 
@@ -620,13 +620,13 @@
         .chat-panel {
             position: fixed;
             top: 0;
-            left: 0;
+            left: 300px;
             right: 0;
             bottom: 0;
             background: var(--bg);
             display: none;
             flex-direction: column;
-            z-index: 400;
+            z-index: 200;
         }
 
         .chat-panel.active {
@@ -648,7 +648,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -821,6 +821,13 @@
             .sidebar.open {
                 transform: translateX(0);
             }
+            .chat-panel {
+                left: 0;
+                z-index: 200;
+            }
+            .chat-back {
+                display: flex;
+            }
             .top-nav {
                 padding: 0 16px;
             }
@@ -977,7 +984,7 @@
     </div>
 </div>
 
-<button class="mobile-menu-btn" style="position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: var(--accent); border: none; border-radius: 25px; color: white; font-size: 24px; cursor: pointer; z-index: 300; display: none; box-shadow: var(--shadow);" id="mobileMenuBtn">☰</button>
+<button class="mobile-menu-btn" id="mobileMenuBtn" style="position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: var(--accent); border: none; border-radius: 25px; color: white; font-size: 24px; cursor: pointer; z-index: 350; display: none; box-shadow: var(--shadow); align-items: center; justify-content: center;">☰</button>
 
 <script>
     // ============ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ============
@@ -1157,7 +1164,7 @@
         }
         
         container.innerHTML = chats.map(c => `
-            <div class="chat-item" data-chat-id="${c.username}">
+            <div class="chat-item" data-chat-id="${c.username}" onclick="selectChat('${c.username}')">
                 <div class="chat-avatar" style="${c.avatar ? `background-image:url(${c.avatar});background-size:cover;` : ''}">${!c.avatar ? (c.name.charAt(0) || 'U').toUpperCase() : ''}</div>
                 <div class="chat-info">
                     <div class="chat-name">${c.name}</div>
@@ -1165,14 +1172,6 @@
                 </div>
             </div>
         `).join('');
-        
-        document.querySelectorAll('#chatsList .chat-item').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.dataset.chatId;
-                selectChat(id);
-            });
-        });
     }
     
     function renderGroups() {
@@ -1182,7 +1181,7 @@
             return;
         }
         container.innerHTML = allGroups.map(g => `
-            <div class="chat-item" data-group-id="${g.id}">
+            <div class="chat-item" data-group-id="${g.id}" onclick="selectGroup('${g.id}')">
                 <div class="chat-avatar">${g.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-info">
                     <div class="chat-name">${g.name}</div>
@@ -1190,17 +1189,9 @@
                 </div>
             </div>
         `).join('');
-        
-        document.querySelectorAll('#groupsList .chat-item').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.dataset.groupId;
-                selectGroup(id);
-            });
-        });
     }
     
-    function selectChat(id) {
+    window.selectChat = (id) => {
         const user = allUsers.find(u => u.username === id);
         if(!user) return;
         currentChat = { type: 'user', id, name: user.name };
@@ -1210,9 +1201,9 @@
             document.getElementById('sidebar').classList.remove('open');
         }
         renderMessages();
-    }
+    };
     
-    function selectGroup(id) {
+    window.selectGroup = (id) => {
         const group = allGroups.find(g => g.id === id);
         if(!group) return;
         currentChat = { type: 'group', id, name: group.name };
@@ -1222,7 +1213,7 @@
             document.getElementById('sidebar').classList.remove('open');
         }
         renderMessages();
-    }
+    };
     
     function renderMessages() {
         const msgs = allMessages[currentChat?.id] || [];
@@ -1449,6 +1440,7 @@
         document.getElementById('groupsTabBtn').classList.remove('active');
         document.getElementById('chatsList').style.display = 'block';
         document.getElementById('groupsList').style.display = 'none';
+        renderChats();
     };
     
     document.getElementById('groupsTabBtn').onclick = () => {
