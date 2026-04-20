@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>envex</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             --received: #1e1e28;
             --online: #22c55e;
             --hover: #1a1a22;
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         body.light {
@@ -40,7 +40,7 @@
             --accent: #3b82f6;
             --received: #eef2f5;
             --hover: #e8ecf0;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         body {
@@ -52,6 +52,58 @@
             font-size: 14px;
         }
 
+        /* Splash Screen */
+        .splash {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .splash-logo {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .splash-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: -0.3px;
+        }
+
+        .splash-sub {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Auth */
         .auth {
             position: fixed;
@@ -61,20 +113,29 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .auth.visible {
+            opacity: 1;
+            visibility: visible;
         }
 
         .auth-card {
             background: var(--bg-card);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 48px 40px;
             width: 400px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
+            animation: fadeInUp 0.5s ease;
         }
 
         .auth-logo {
             font-size: 42px;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             margin-bottom: 40px;
             letter-spacing: -1px;
@@ -89,11 +150,12 @@
             padding: 14px 16px;
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
             font-size: 14px;
             margin-bottom: 12px;
             outline: none;
+            transition: all 0.2s;
         }
 
         .auth-input:focus {
@@ -105,11 +167,16 @@
             padding: 12px;
             background: var(--accent);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.9;
         }
 
         .auth-switch {
@@ -120,7 +187,9 @@
             cursor: pointer;
         }
 
-        .auth-switch span { color: var(--accent); }
+        .auth-switch span {
+            color: var(--accent);
+        }
 
         .error-msg {
             color: #ef4444;
@@ -134,6 +203,12 @@
             display: none;
             width: 100%;
             height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .app.visible {
+            opacity: 1;
         }
 
         .main-layout {
@@ -141,7 +216,7 @@
             height: 100%;
         }
 
-        /* Sidebar - список чатов */
+        /* Sidebar - чаты */
         .sidebar {
             width: 300px;
             background: var(--bg-side);
@@ -164,17 +239,17 @@
         }
 
         .avatar-small {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 20px;
+            border-radius: 22px;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 500;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
         }
 
@@ -191,10 +266,10 @@
 
         .search-input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 10px 14px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             color: var(--text);
             font-size: 13px;
             outline: none;
@@ -238,6 +313,7 @@
             gap: 12px;
             cursor: pointer;
             border-radius: 12px;
+            transition: background 0.15s;
         }
 
         .chat-item:hover {
@@ -245,14 +321,14 @@
         }
 
         .chat-avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             background: var(--bg-card);
-            border-radius: 20px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             background-size: cover;
             background-position: center;
@@ -273,7 +349,7 @@
             color: var(--text-secondary);
         }
 
-        /* Right Panel - переключается между профилем и лентой */
+        /* Right Panel */
         .right-panel {
             flex: 1;
             display: flex;
@@ -284,14 +360,14 @@
         /* Top Navigation */
         .top-nav {
             display: flex;
-            gap: 2px;
+            gap: 4px;
             background: var(--bg-side);
             border-bottom: 1px solid var(--border);
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .nav-link {
-            padding: 16px 24px;
+            padding: 16px 28px;
             font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
@@ -323,23 +399,23 @@
         }
 
         .profile-avatar {
-            width: 96px;
-            height: 96px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 48px;
+            border-radius: 50px;
             margin: 0 auto 20px;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            font-size: 40px;
             font-weight: 500;
             cursor: pointer;
         }
 
         .profile-name {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
             margin-bottom: 6px;
         }
@@ -391,6 +467,7 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
+            transition: background 0.15s;
         }
 
         .setting-row:hover {
@@ -421,6 +498,7 @@
             text-align: center;
             cursor: pointer;
             font-size: 13px;
+            transition: all 0.2s;
         }
 
         .theme-option.active {
@@ -471,6 +549,11 @@
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
         }
 
         .post-header {
@@ -481,16 +564,16 @@
         }
 
         .post-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 18px;
+            border-radius: 20px;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
         }
 
@@ -515,6 +598,7 @@
             max-width: 100%;
             border-radius: 12px;
             margin-top: 10px;
+            cursor: pointer;
         }
 
         .post-actions {
@@ -528,6 +612,7 @@
             font-size: 12px;
             color: var(--text-secondary);
             cursor: pointer;
+            transition: color 0.2s;
         }
 
         .post-action:hover {
@@ -560,12 +645,13 @@
         }
 
         .feed-input-wrapper button {
-            width: 38px;
-            height: 38px;
-            border-radius: 19px;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
             border: none;
             cursor: pointer;
             font-size: 16px;
+            transition: opacity 0.2s;
         }
 
         .feed-attach {
@@ -579,7 +665,7 @@
             color: white;
         }
 
-        /* Chat Panel - полноэкранный чат */
+        /* Chat Panel */
         .chat-panel {
             position: fixed;
             top: 0;
@@ -606,16 +692,16 @@
         }
 
         .chat-back {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 18px;
+            border-radius: 20px;
             display: none;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
         }
 
         .chat-header h2 {
@@ -647,7 +733,7 @@
 
         .bubble {
             padding: 10px 16px;
-            border-radius: 18px;
+            border-radius: 20px;
         }
 
         .sent .bubble {
@@ -669,6 +755,7 @@
             max-width: 200px;
             border-radius: 12px;
             margin-top: 6px;
+            cursor: pointer;
         }
 
         .message-meta {
@@ -706,9 +793,9 @@
         }
 
         .chat-input-wrapper button {
-            width: 38px;
-            height: 38px;
-            border-radius: 19px;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
             border: none;
             cursor: pointer;
             font-size: 16px;
@@ -779,7 +866,7 @@
                 width: 280px;
                 z-index: 150;
                 transform: translateX(-100%);
-                transition: transform 0.3s;
+                transition: transform 0.3s ease;
             }
             .sidebar.open {
                 transform: translateX(0);
@@ -798,7 +885,7 @@
                 padding: 0 16px;
             }
             .nav-link {
-                padding: 14px 16px;
+                padding: 14px 20px;
             }
             .profile-header {
                 padding: 24px;
@@ -819,6 +906,15 @@
     </style>
 </head>
 <body>
+
+<!-- Splash Screen -->
+<div class="splash" id="splashScreen">
+    <div class="splash-content">
+        <div class="splash-logo">envex</div>
+        <div class="splash-title">современный и безопасный мессенджер</div>
+        <div class="splash-sub">защищённое общение</div>
+    </div>
+</div>
 
 <div class="auth" id="authScreen">
     <div class="auth-card">
@@ -854,7 +950,7 @@
             <div class="chats-list" id="groupsList" style="display: none;"></div>
         </div>
 
-        <!-- Правая панель: профиль или лента -->
+        <!-- Правая панель -->
         <div class="right-panel">
             <div class="top-nav">
                 <div class="nav-link active" data-view="profile">Профиль</div>
@@ -909,7 +1005,7 @@
             <div class="feed-view" id="feedView">
                 <div class="feed-header">
                     <h1>Лента</h1>
-                    <p>Публичные сообщения</p>
+                    <p>публичные сообщения</p>
                 </div>
                 <div class="feed-posts" id="feedPosts">
                     <div class="empty-state">Нет сообщений</div>
@@ -924,14 +1020,14 @@
             </div>
         </div>
 
-        <!-- Чат (открывается отдельно, перекрывая правую панель) -->
+        <!-- Панель чата -->
         <div class="chat-panel" id="chatPanel">
             <div class="chat-header">
                 <div class="chat-back" id="chatBackBtn">←</div>
                 <h2 id="chatName"></h2>
             </div>
             <div class="chat-messages" id="messagesList">
-                <div class="empty-state">Нет сообщений</div>
+                <div class="empty-state">Выберите чат</div>
             </div>
             <div class="chat-input-area">
                 <div class="chat-input-wrapper">
@@ -1001,6 +1097,17 @@
 
     const SESSION_KEY = 'envex_user_data';
 
+    // ============ SPLASH ============
+    setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        setTimeout(() => {
+            splash.style.display = 'none';
+            document.getElementById('authScreen').classList.add('visible');
+        }, 600);
+    }, 2500);
+
     // ============ СЕССИЯ ============
     function saveUserData(username, password, name, avatar) {
         localStorage.setItem(SESSION_KEY, JSON.stringify({ username, password, name, avatar, savedAt: Date.now() }));
@@ -1053,6 +1160,9 @@
                     saveUserData(username, password, data.name, data.avatar);
                     document.getElementById('authScreen').style.display = 'none';
                     document.getElementById('appScreen').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('appScreen').classList.add('visible');
+                    }, 50);
                     isConnecting = false;
                     if(btn) btn.disabled = false;
                 }
@@ -1401,7 +1511,7 @@
         connectAndAuth(isLoginMode ? 'login' : 'register', u, p, n);
     };
     
-    // Табы
+    // Табы в левой панели
     document.getElementById('chatsTabBtn').onclick = () => {
         document.getElementById('chatsTabBtn').classList.add('active');
         document.getElementById('groupsTabBtn').classList.remove('active');
@@ -1485,7 +1595,8 @@
     
     // Мобильное меню
     let sidebarOpen = false;
-    document.querySelector('.avatar-small')?.addEventListener('click', () => {
+    document.querySelector('.avatar-small')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         if(window.innerWidth <= 768) {
             document.getElementById('sidebar').classList.add('open');
             sidebarOpen = true;
