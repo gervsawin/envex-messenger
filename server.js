@@ -17,14 +17,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'messenger.html'));
 });
 
-// Хранилища
+// ============ ХРАНИЛИЩА ============
 const users = new Map();
 const channels = new Map();
 const groups = new Map();
 let messages = [];
+let posts = [];
 let nextId = 1;
+let nextPostId = 1;
 
-// Загрузка данных
+// ============ ЗАГРУЗКА ДАННЫХ ============
 try {
     const savedUsers = JSON.parse(fs.readFileSync('./users.json', 'utf8'));
     for (const [username, data] of Object.entries(savedUsers)) {
@@ -52,6 +54,13 @@ try {
     nextId = (messages[messages.length - 1]?.id || 0) + 1;
 } catch(e) {}
 
+try {
+    const savedPosts = JSON.parse(fs.readFileSync('./posts.json', 'utf8'));
+    posts = savedPosts;
+    nextPostId = (posts[posts.length - 1]?.id || 0) + 1;
+} catch(e) {}
+
+// ============ СОХРАНЕНИЕ ============
 function saveUsers() {
     const toSave = {};
     for (const [username, data] of users.entries()) {
@@ -80,6 +89,11 @@ function saveMessages() {
     fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-2000), null, 2), 'utf8');
 }
 
+function savePosts() {
+    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2), 'utf8');
+}
+
+// ============ РАССЫЛКА ============
 function broadcastToAll(data, excludeSocket = null) {
     wss.clients.forEach(client => {
         if (client !== excludeSocket && client.readyState === WebSocket.OPEN) {
@@ -136,6 +150,7 @@ function broadcastGroupList() {
     broadcastToAll({ type: 'groups', groups: list });
 }
 
+// ============ WEBSOCKET ОБРАБОТЧИК ============
 wss.on('connection', (ws) => {
     let currentUser = null;
     
@@ -143,6 +158,7 @@ wss.on('connection', (ws) => {
         try {
             const data = JSON.parse(raw);
             
+            // === РЕГИСТРАЦИЯ ===
             if (data.type === 'register') {
                 const { username, password, name, avatar } = data;
                 if (!username.startsWith('@')) {
@@ -165,6 +181,7 @@ wss.on('connection', (ws) => {
                     (m.isGroup && groups.get(m.to)?.members?.includes(username))
                 );
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
+                ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
                 
                 broadcastUserList();
                 broadcastChannelList();
@@ -173,6 +190,7 @@ wss.on('connection', (ws) => {
                 return;
             }
             
+            // === ЛОГИН ===
             if (data.type === 'login') {
                 const { username, password } = data;
                 const user = users.get(username);
@@ -196,6 +214,7 @@ wss.on('connection', (ws) => {
                     (m.isGroup && groups.get(m.to)?.members?.includes(username))
                 );
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
+                ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
                 
                 broadcastUserList();
                 broadcastChannelList();
@@ -204,6 +223,7 @@ wss.on('connection', (ws) => {
                 return;
             }
             
+            // === ОБНОВЛЕНИЕ ПРОФИЛЯ ===
             if (data.type === 'update_profile') {
                 const { name, avatar } = data;
                 const user = users.get(currentUser);
@@ -217,24 +237,34 @@ wss.on('connection', (ws) => {
                 return;
             }
             
-            if (data.type === 'typing') {
-                const { to } = data;
+            // === НОВЫЙ ПОСТ В ЛЕНТУ ===
+            if (data.type === 'new_post') {
+                const { text, isImage } = data;
                 const user = users.get(currentUser);
-                if (user) user.typingTo = to;
-                broadcastToUser(to, { type: 'typing', from: currentUser });
-                setTimeout(() => {
-                    if (users.get(currentUser)?.typingTo === to) {
-                        broadcastToUser(to, { type: 'stop_typing', from: currentUser });
-                    }
-                }, 2000);
+                const post = {
+                    id: nextPostId++,
+                    author: currentUser,
+                    authorName: user.name,
+                    authorAvatar: user.avatar,
+                    text: text,
+                    isImage: isImage || false,
+                    time: Date.now(),
+                    timeStr: new Date().toLocaleString(),
+                    likes: 0,
+                    comments: 0
+                };
+                posts.unshift(post);
+                savePosts();
+                broadcastToAll({ type: 'new_post', post });
                 return;
             }
             
+            // === ЛИЧНОЕ СООБЩЕНИЕ ===
             if (data.type === 'message') {
-                const { to, text, isImage, replyTo } = data;
+                const { to, text, isImage } = data;
                 const msg = {
                     id: nextId++, from: currentUser, to, text, isImage: isImage || false,
-                    replyTo: replyTo || null, time: Date.now(),
+                    time: Date.now(),
                     timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                     status: 'sent', read: false, edited: false, deleted: false, isGroup: false, isChannel: false
                 };
@@ -248,15 +278,12 @@ wss.on('connection', (ws) => {
                 } else {
                     ws.send(JSON.stringify({ type: 'new_message', message: msg }));
                 }
-                // Обновляем непрочитанные
-                if (recipient && recipient.online) {
-                    const unreadCount = messages.filter(m => m.to === recipient.username && !m.read && m.from !== recipient.username).length;
-                    broadcastToUser(recipient.username, { type: 'unread_count', count: unreadCount });
-                }
+                return;
             }
             
+            // === ГРУППОВОЕ СООБЩЕНИЕ ===
             if (data.type === 'group_message') {
-                const { groupId, text, isImage, replyTo } = data;
+                const { groupId, text, isImage } = data;
                 const group = groups.get(groupId);
                 if (!group || !group.members.includes(currentUser)) {
                     ws.send(JSON.stringify({ type: 'error', text: 'Нет доступа к группе' }));
@@ -264,7 +291,7 @@ wss.on('connection', (ws) => {
                 }
                 const msg = {
                     id: nextId++, from: currentUser, to: groupId, text, isImage: isImage || false,
-                    replyTo: replyTo || null, time: Date.now(),
+                    time: Date.now(),
                     timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                     status: 'sent', read: false, edited: false, deleted: false, isGroup: true, isChannel: false
                 };
@@ -272,22 +299,24 @@ wss.on('connection', (ws) => {
                 saveMessages();
                 broadcastToGroup(groupId, { type: 'new_message', message: msg }, currentUser);
                 ws.send(JSON.stringify({ type: 'new_message', message: msg }));
+                return;
             }
             
+            // === СООБЩЕНИЕ В КАНАЛ ===
             if (data.type === 'channel_message') {
-                const { channelId, text, isImage, replyTo } = data;
+                const { channelId, text, isImage } = data;
                 const channel = channels.get(channelId);
                 if (!channel) {
                     ws.send(JSON.stringify({ type: 'error', text: 'Канал не найден' }));
                     return;
                 }
-                if (channel.owner !== currentUser && !channel.subscribers.includes(currentUser)) {
+                if (!channel.subscribers.includes(currentUser)) {
                     ws.send(JSON.stringify({ type: 'error', text: 'Нет доступа к каналу' }));
                     return;
                 }
                 const msg = {
                     id: nextId++, from: currentUser, to: channelId, text, isImage: isImage || false,
-                    replyTo: replyTo || null, time: Date.now(),
+                    time: Date.now(),
                     timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                     status: 'sent', read: false, edited: false, deleted: false, isGroup: false, isChannel: true
                 };
@@ -295,51 +324,23 @@ wss.on('connection', (ws) => {
                 saveMessages();
                 broadcastToChannel(channelId, { type: 'new_message', message: msg }, currentUser);
                 ws.send(JSON.stringify({ type: 'new_message', message: msg }));
+                return;
             }
             
+            // === СОЗДАНИЕ ГРУППЫ ===
             if (data.type === 'create_group') {
-                const { name, members, avatar } = data;
+                const { name, members } = data;
                 const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
                 groups.set(groupId, {
-                    name, members: [currentUser, ...members], owner: currentUser, avatar: avatar || null, createdAt: Date.now()
+                    name, members: [currentUser, ...members], owner: currentUser, avatar: null, createdAt: Date.now()
                 });
                 broadcastGroupList();
                 saveGroups();
                 ws.send(JSON.stringify({ type: 'group_created', groupId, name }));
+                return;
             }
             
-            if (data.type === 'create_channel') {
-                const { name, description, avatar } = data;
-                const channelId = 'channel_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-                channels.set(channelId, {
-                    name, description: description || '', owner: currentUser, subscribers: [currentUser], avatar: avatar || null, createdAt: Date.now()
-                });
-                broadcastChannelList();
-                saveChannels();
-                ws.send(JSON.stringify({ type: 'channel_created', channelId, name }));
-            }
-            
-            if (data.type === 'subscribe_channel') {
-                const { channelId } = data;
-                const channel = channels.get(channelId);
-                if (channel && !channel.subscribers.includes(currentUser)) {
-                    channel.subscribers.push(currentUser);
-                    broadcastChannelList();
-                    saveChannels();
-                    ws.send(JSON.stringify({ type: 'subscribed', channelId }));
-                }
-            }
-            
-            if (data.type === 'unsubscribe_channel') {
-                const { channelId } = data;
-                const channel = channels.get(channelId);
-                if (channel && channel.subscribers.includes(currentUser) && channel.owner !== currentUser) {
-                    channel.subscribers = channel.subscribers.filter(s => s !== currentUser);
-                    broadcastChannelList();
-                    saveChannels();
-                }
-            }
-            
+            // === ПРОЧИТАНО ===
             if (data.type === 'read') {
                 const { messageId } = data;
                 const msg = messages.find(m => m.id === messageId);
@@ -348,66 +349,38 @@ wss.on('connection', (ws) => {
                     msg.status = 'read';
                     broadcastToUser(msg.from, { type: 'message_read', messageId });
                     saveMessages();
-                    // Обновляем счётчик непрочитанных
-                    const unreadCount = messages.filter(m => m.to === currentUser && !m.read).length;
-                    ws.send(JSON.stringify({ type: 'unread_count', count: unreadCount }));
                 }
+                return;
             }
             
+            // === РЕДАКТИРОВАНИЕ ===
             if (data.type === 'edit') {
                 const { messageId, newText } = data;
                 const msg = messages.find(m => m.id === messageId);
                 if (msg && msg.from === currentUser) {
                     msg.text = newText;
                     msg.edited = true;
-                    if (msg.isChannel) {
-                        broadcastToChannel(msg.to, { type: 'message_edited', messageId, newText });
-                    } else if (msg.isGroup) {
-                        broadcastToGroup(msg.to, { type: 'message_edited', messageId, newText });
-                    } else {
-                        broadcastToUser(msg.to, { type: 'message_edited', messageId, newText });
-                    }
+                    if (msg.isChannel) broadcastToChannel(msg.to, { type: 'message_edited', messageId, newText });
+                    else if (msg.isGroup) broadcastToGroup(msg.to, { type: 'message_edited', messageId, newText });
+                    else broadcastToUser(msg.to, { type: 'message_edited', messageId, newText });
                     saveMessages();
                 }
+                return;
             }
             
+            // === УДАЛЕНИЕ ===
             if (data.type === 'delete') {
-                const { messageId, forEveryone } = data;
+                const { messageId } = data;
                 const msg = messages.find(m => m.id === messageId);
-                if (msg && (msg.from === currentUser || forEveryone)) {
-                    if (forEveryone && msg.from !== currentUser) {
-                        ws.send(JSON.stringify({ type: 'error', text: 'Нельзя удалить чужое сообщение' }));
-                        return;
-                    }
+                if (msg && msg.from === currentUser) {
                     msg.text = '[Удалено]';
                     msg.deleted = true;
-                    if (msg.isChannel) {
-                        broadcastToChannel(msg.to, { type: 'message_deleted', messageId });
-                    } else if (msg.isGroup) {
-                        broadcastToGroup(msg.to, { type: 'message_deleted', messageId });
-                    } else {
-                        broadcastToUser(msg.to, { type: 'message_deleted', messageId });
-                    }
+                    if (msg.isChannel) broadcastToChannel(msg.to, { type: 'message_deleted', messageId });
+                    else if (msg.isGroup) broadcastToGroup(msg.to, { type: 'message_deleted', messageId });
+                    else broadcastToUser(msg.to, { type: 'message_deleted', messageId });
                     saveMessages();
                 }
-            }
-            
-            if (data.type === 'delete_chat') {
-                const { withUser } = data;
-                messages = messages.filter(m => 
-                    !((m.from === currentUser && m.to === withUser) || (m.from === withUser && m.to === currentUser))
-                );
-                saveMessages();
-                ws.send(JSON.stringify({ type: 'chat_deleted', withUser }));
-            }
-            
-            if (data.type === 'search_messages') {
-                const { query } = data;
-                const results = messages.filter(m => 
-                    (m.from === currentUser || m.to === currentUser) && 
-                    m.text.toLowerCase().includes(query.toLowerCase())
-                ).slice(-50);
-                ws.send(JSON.stringify({ type: 'search_results', results }));
+                return;
             }
             
         } catch(e) { console.error('Ошибка:', e); }
@@ -420,7 +393,6 @@ wss.on('connection', (ws) => {
                 user.online = false;
                 user.lastSeen = Date.now();
                 user.ws = null;
-                user.typingTo = null;
             }
             broadcastUserList();
             saveUsers();
@@ -429,42 +401,5 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Сервер: http://localhost:${PORT}`);
+    console.log(`✅ Сервер запущен: http://localhost:${PORT}`);
 });
-// Добавить в хранилища
-let posts = [];
-let nextPostId = 1;
-
-// Загрузка постов
-try {
-    const savedPosts = JSON.parse(fs.readFileSync('./posts.json', 'utf8'));
-    posts = savedPosts;
-    nextPostId = (posts[posts.length - 1]?.id || 0) + 1;
-} catch(e) {}
-
-function savePosts() {
-    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2), 'utf8');
-}
-
-// В обработчик сообщений WebSocket добавить:
-if (data.type === 'new_post') {
-    const { text, isImage } = data;
-    const post = {
-        id: nextPostId++,
-        author: currentUser,
-        authorName: users.get(currentUser).name,
-        authorAvatar: users.get(currentUser).avatar,
-        text: text,
-        isImage: isImage || false,
-        time: Date.now(),
-        timeStr: new Date().toLocaleString(),
-        likes: 0,
-        comments: 0
-    };
-    posts.unshift(post);
-    savePosts();
-    broadcastToAll({ type: 'new_post', post });
-}
-
-// При логине/регистрации отправлять посты
-ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
