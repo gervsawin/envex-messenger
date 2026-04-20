@@ -431,3 +431,40 @@ wss.on('connection', (ws) => {
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Сервер: http://localhost:${PORT}`);
 });
+// Добавить в хранилища
+let posts = [];
+let nextPostId = 1;
+
+// Загрузка постов
+try {
+    const savedPosts = JSON.parse(fs.readFileSync('./posts.json', 'utf8'));
+    posts = savedPosts;
+    nextPostId = (posts[posts.length - 1]?.id || 0) + 1;
+} catch(e) {}
+
+function savePosts() {
+    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2), 'utf8');
+}
+
+// В обработчик сообщений WebSocket добавить:
+if (data.type === 'new_post') {
+    const { text, isImage } = data;
+    const post = {
+        id: nextPostId++,
+        author: currentUser,
+        authorName: users.get(currentUser).name,
+        authorAvatar: users.get(currentUser).avatar,
+        text: text,
+        isImage: isImage || false,
+        time: Date.now(),
+        timeStr: new Date().toLocaleString(),
+        likes: 0,
+        comments: 0
+    };
+    posts.unshift(post);
+    savePosts();
+    broadcastToAll({ type: 'new_post', post });
+}
+
+// При логине/регистрации отправлять посты
+ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
