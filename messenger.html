@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>envex — современный мессенджер</title>
+    <title>envex — мессенджер</title>
     <style>
         * {
             margin: 0;
@@ -16,47 +16,56 @@
         :root {
             --bg: #0a0a0f;
             --bg-side: #0f0f14;
-            --bg-card: #1a1a24;
-            --border: #252530;
+            --bg-card: #16161c;
+            --border: #20202a;
+            --border-light: #2a2a35;
             --text: #ffffff;
-            --text-dim: #8e8e9a;
-            --accent: #4f46e5;
-            --accent-glow: rgba(79, 70, 229, 0.3);
-            --sent: #4f46e5;
-            --received: #1a1a24;
+            --text-secondary: #8a8a99;
+            --text-tertiary: #5a5a6e;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --sent: #3b82f6;
+            --received: #1e1e28;
             --online: #22c55e;
-            --hover: #1f1f2a;
+            --offline: #5a5a6e;
+            --hover: #1a1a22;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         body.light {
-            --bg: #f0f2f5;
+            --bg: #f5f5f8;
             --bg-side: #ffffff;
-            --bg-card: #e8eaed;
-            --border: #dcdfe4;
+            --bg-card: #eef2f5;
+            --border: #e2e5e9;
+            --border-light: #eef2f5;
             --text: #1a1a2e;
-            --text-dim: #5a5a6e;
+            --text-secondary: #6a6a7e;
+            --text-tertiary: #9a9aae;
             --accent: #3b82f6;
-            --sent: #3b82f6;
-            --received: #e8eaed;
-            --hover: #eef2f5;
+            --received: #eef2f5;
+            --hover: #e8ecf0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
             background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         /* АНИМАЦИИ */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
+            from { transform: translateX(-16px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
 
@@ -74,25 +83,25 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(40px);
         }
 
         .auth-card {
             background: var(--bg-card);
-            border-radius: 32px;
+            border-radius: 28px;
             padding: 48px 40px;
             width: 420px;
             border: 1px solid var(--border);
-            animation: fadeIn 0.4s ease;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+            box-shadow: var(--shadow);
         }
 
         .auth-logo {
-            font-size: 56px;
+            font-size: 48px;
             font-weight: 700;
             text-align: center;
             margin-bottom: 40px;
-            background: linear-gradient(135deg, var(--accent), #a855f7);
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -100,12 +109,12 @@
 
         .auth-input {
             width: 100%;
-            padding: 16px 18px;
+            padding: 14px 18px;
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 14px;
             color: var(--text);
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 12px;
             outline: none;
             transition: all 0.2s;
@@ -118,33 +127,33 @@
 
         .auth-btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: var(--accent);
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             color: white;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 500;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .auth-btn:hover {
-            opacity: 0.9;
-            transform: scale(0.98);
+            background: var(--accent-dark);
+            transform: translateY(-1px);
         }
 
         .auth-switch {
             text-align: center;
             margin-top: 20px;
-            color: var(--text-dim);
+            color: var(--text-secondary);
             font-size: 14px;
             cursor: pointer;
             transition: color 0.2s;
         }
 
         .auth-switch:hover { color: var(--accent); }
-        .auth-switch span { color: var(--accent); font-weight: 500; }
+        .auth-switch span { color: var(--accent); }
 
         .error-msg {
             color: #ef4444;
@@ -167,7 +176,7 @@
 
         /* SIDEBAR */
         .sidebar {
-            width: 340px;
+            width: 320px;
             background: var(--bg-side);
             border-right: 1px solid var(--border);
             display: flex;
@@ -176,7 +185,7 @@
         }
 
         .sidebar-header {
-            padding: 24px;
+            padding: 24px 20px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -184,19 +193,19 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .avatar {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(135deg, var(--accent), #a855f7);
-            border-radius: 28px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 22px;
+            font-weight: 500;
+            font-size: 20px;
             cursor: pointer;
             background-size: cover;
             background-position: center;
@@ -205,22 +214,40 @@
 
         .avatar:hover { transform: scale(1.02); }
 
-        .user-text h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-        .user-text p { font-size: 13px; color: var(--online); display: flex; align-items: center; gap: 6px; }
-        .online-dot { width: 8px; height: 8px; background: var(--online); border-radius: 50%; display: inline-block; }
+        .user-text h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-text p {
+            font-size: 12px;
+            color: var(--online);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--online);
+            border-radius: 50%;
+            display: inline-block;
+        }
 
         .search-box {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text);
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             transition: all 0.2s;
         }
@@ -233,15 +260,14 @@
         .action-buttons {
             display: flex;
             gap: 8px;
-            margin-top: 12px;
         }
 
         .action-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
@@ -254,13 +280,17 @@
             transform: translateY(-1px);
         }
 
+        .logout-btn {
+            color: #ef4444;
+        }
+
         .section-title {
-            padding: 20px 24px 10px 24px;
-            font-size: 12px;
+            padding: 16px 20px 8px 20px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-dim);
+            color: var(--text-tertiary);
         }
 
         .chats-scroll {
@@ -269,37 +299,56 @@
         }
 
         .chat-item {
-            padding: 12px 20px;
+            padding: 10px 16px;
             margin: 4px 12px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             cursor: pointer;
-            border-radius: 16px;
-            transition: all 0.2s;
-            animation: slideIn 0.2s ease;
+            border-radius: 14px;
+            transition: all 0.15s;
         }
 
-        .chat-item:hover { background: var(--hover); transform: translateX(2px); }
-        .chat-item.active { background: var(--bg-card); border-left: 3px solid var(--accent); }
+        .chat-item:hover {
+            background: var(--hover);
+        }
+
+        .chat-item.active {
+            background: var(--bg-card);
+        }
 
         .chat-avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--bg-card);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             background-size: cover;
             background-position: center;
         }
 
-        .chat-info { flex: 1; }
-        .chat-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
-        .chat-status { font-size: 12px; color: var(--text-dim); }
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-weight: 500;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* PUBLIC FEED */
         .public-feed {
@@ -310,18 +359,26 @@
         }
 
         .feed-header {
-            padding: 24px;
+            padding: 20px 28px;
             border-bottom: 1px solid var(--border);
-            background: var(--bg-side);
         }
 
-        .feed-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .feed-header p { font-size: 14px; color: var(--text-dim); }
+        .feed-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .feed-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
 
         .feed-posts {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 20px 28px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -329,14 +386,16 @@
 
         .post-card {
             background: var(--bg-card);
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 20px;
             border: 1px solid var(--border);
             transition: all 0.2s;
-            animation: fadeIn 0.3s ease;
         }
 
-        .post-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
 
         .post-header {
             display: flex;
@@ -346,37 +405,47 @@
         }
 
         .post-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent), #a855f7);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 18px;
+            font-weight: 500;
+            font-size: 16px;
+            background-size: cover;
+            background-position: center;
         }
 
-        .post-author h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-        .post-author span { font-size: 11px; color: var(--text-dim); }
+        .post-author h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .post-author span {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
 
         .post-content {
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.5;
             margin-bottom: 14px;
         }
 
         .post-content img {
             max-width: 100%;
-            border-radius: 16px;
-            margin-top: 12px;
+            border-radius: 14px;
+            margin-top: 10px;
         }
 
         .post-actions {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             padding-top: 12px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-light);
         }
 
         .post-action {
@@ -385,14 +454,16 @@
             gap: 6px;
             cursor: pointer;
             font-size: 13px;
-            color: var(--text-dim);
+            color: var(--text-secondary);
             transition: color 0.2s;
         }
 
-        .post-action:hover { color: var(--accent); }
+        .post-action:hover {
+            color: var(--accent);
+        }
 
         .feed-input {
-            padding: 20px 24px;
+            padding: 16px 28px 24px 28px;
             background: var(--bg-side);
             border-top: 1px solid var(--border);
         }
@@ -402,8 +473,8 @@
             gap: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 8px 16px;
+            border-radius: 24px;
+            padding: 6px 12px;
         }
 
         .feed-input-wrapper input {
@@ -412,36 +483,45 @@
             border: none;
             color: var(--text);
             outline: none;
-            font-size: 15px;
-            padding: 12px 0;
+            font-size: 14px;
+            padding: 10px 8px;
         }
 
-        .feed-input-wrapper button {
+        .feed-input-wrapper input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .feed-send-btn {
             background: var(--accent);
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .feed-send-btn:hover {
+            background: var(--accent-dark);
+            transform: scale(0.96);
+        }
+
+        .attach-feed {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
             font-size: 18px;
             transition: all 0.2s;
         }
 
-        .feed-input-wrapper button:hover { opacity: 0.9; transform: scale(0.96); }
-
-        .attach-feed {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.2s;
+        .attach-feed:hover {
+            background: var(--hover);
         }
-
-        .attach-feed:hover { background: var(--hover); }
 
         /* CHAT PANEL */
         .chat-panel {
@@ -451,11 +531,16 @@
             background: var(--bg);
         }
 
-        .chat-panel.active { display: flex; }
-        .public-feed.hide { display: none; }
+        .chat-panel.active {
+            display: flex;
+        }
+
+        .public-feed.hide {
+            display: none;
+        }
 
         .chat-panel-header {
-            padding: 20px 24px;
+            padding: 16px 24px;
             background: var(--bg-side);
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -464,8 +549,8 @@
         }
 
         .back-to-feed {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 50%;
@@ -473,13 +558,23 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .back-to-feed:hover {
+            background: var(--hover);
+        }
+
+        .chat-panel-header h2 {
+            font-size: 17px;
+            font-weight: 600;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 20px 24px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -487,31 +582,44 @@
 
         .message {
             display: flex;
-            max-width: 75%;
-            animation: fadeIn 0.2s ease;
+            max-width: 70%;
         }
 
-        .message.sent { align-self: flex-end; }
-        .message.received { align-self: flex-start; }
+        .message.sent {
+            align-self: flex-end;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
 
         .bubble {
             padding: 10px 16px;
-            border-radius: 22px;
+            border-radius: 20px;
         }
 
         .sent .bubble {
             background: var(--sent);
             color: white;
-            border-bottom-right-radius: 6px;
+            border-bottom-right-radius: 4px;
         }
 
         .received .bubble {
             background: var(--received);
-            border-bottom-left-radius: 6px;
+            border-bottom-left-radius: 4px;
         }
 
-        .message-text { font-size: 15px; line-height: 1.4; }
-        .message-text img { max-width: 200px; border-radius: 14px; margin-top: 6px; cursor: pointer; }
+        .message-text {
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .message-text img {
+            max-width: 200px;
+            border-radius: 12px;
+            margin-top: 6px;
+            cursor: pointer;
+        }
 
         .message-meta {
             display: flex;
@@ -533,8 +641,8 @@
             gap: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 6px 16px;
+            border-radius: 24px;
+            padding: 6px 12px;
         }
 
         .chat-input-wrapper input {
@@ -543,35 +651,50 @@
             border: none;
             color: var(--text);
             outline: none;
-            font-size: 15px;
-            padding: 12px 0;
+            font-size: 14px;
+            padding: 10px 8px;
+        }
+
+        .chat-input-wrapper input::placeholder {
+            color: var(--text-tertiary);
         }
 
         .chat-send-btn {
             background: var(--accent);
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             color: white;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--accent-dark);
+            transform: scale(0.96);
         }
 
         .chat-attach-btn {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .chat-attach-btn:hover {
+            background: var(--hover);
         }
 
         .empty-state {
             text-align: center;
-            color: var(--text-dim);
-            padding: 60px 20px;
+            color: var(--text-tertiary);
+            padding: 48px 20px;
         }
 
         /* MODALS */
@@ -579,7 +702,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(8px);
             z-index: 2000;
             display: none;
             align-items: center;
@@ -591,25 +714,29 @@
         .modal-content {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 28px;
             width: 100%;
-            max-width: 380px;
+            max-width: 360px;
         }
 
-        .modal-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
 
         .setting-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--border);
         }
 
         .avatar-preview {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background: var(--bg);
             margin: 0 auto 20px;
@@ -620,10 +747,16 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 48px;
-            height: 28px;
+            width: 46px;
+            height: 26px;
         }
-        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -632,28 +765,66 @@
             right: 0;
             bottom: 0;
             background-color: var(--border);
-            border-radius: 28px;
+            border-radius: 26px;
             transition: 0.2s;
         }
+
         .slider:before {
             position: absolute;
             content: "";
-            height: 24px;
-            width: 24px;
+            height: 22px;
+            width: 22px;
             left: 2px;
             bottom: 2px;
             background-color: white;
             border-radius: 50%;
             transition: 0.2s;
         }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(20px); }
 
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* MOBILE */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
-            .sidebar.open { transform: translateX(0); }
-            .back-to-feed { display: flex; }
-            .message { max-width: 85%; }
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .back-to-feed {
+                display: flex;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+
+            .feed-posts {
+                padding: 16px;
+            }
+
+            .feed-header {
+                padding: 16px 20px;
+            }
+
+            .feed-input {
+                padding: 12px 20px 20px 20px;
+            }
         }
     </style>
 </head>
@@ -662,7 +833,7 @@
 <div class="auth" id="authScreen">
     <div class="auth-card">
         <div class="auth-logo">envex</div>
-        <input type="text" id="authUsername" class="auth-input" placeholder="@username" autocomplete="off">
+        <input type="text" id="authUsername" class="auth-input" placeholder="username" autocomplete="off">
         <input type="password" id="authPassword" class="auth-input" placeholder="Пароль">
         <input type="text" id="authName" class="auth-input" placeholder="Ваше имя" style="display: none;">
         <button id="authSubmitBtn" class="auth-btn">Войти</button>
@@ -683,35 +854,31 @@
                     </div>
                 </div>
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Поиск по @username">
+                    <input type="text" id="searchInput" placeholder="Поиск">
                 </div>
                 <div class="action-buttons">
-                    <button class="action-btn" id="createGroupBtn">+ Группа</button>
-                    <button class="action-btn" id="settingsBtn">⚙️</button>
-                    <button class="action-btn logout-btn" id="logoutBtn" style="color:#ef4444;">Выйти</button>
+                    <button class="action-btn" id="createGroupBtn">Группа</button>
+                    <button class="action-btn" id="settingsBtn">Настройки</button>
+                    <button class="action-btn logout-btn" id="logoutBtn">Выйти</button>
                 </div>
             </div>
             <div class="section-title">Чаты</div>
             <div class="chats-scroll" id="chatsList"></div>
-            <div class="section-title">Группы</div>
-            <div class="chats-scroll" id="groupsList"></div>
-            <div class="section-title">Каналы</div>
-            <div class="chats-scroll" id="channelsList"></div>
         </div>
 
         <div class="public-feed" id="publicFeed">
             <div class="feed-header">
                 <h1>Лента</h1>
-                <p>Посты от всех пользователей</p>
+                <p>Публичные сообщения</p>
             </div>
             <div class="feed-posts" id="feedPosts">
-                <div class="empty-state">Нет постов. Напиши что-нибудь!</div>
+                <div class="empty-state">Нет сообщений</div>
             </div>
             <div class="feed-input">
                 <div class="feed-input-wrapper">
-                    <button class="attach-feed" id="feedAttachBtn">📷</button>
+                    <button class="attach-feed" id="feedAttachBtn">+</button>
                     <input type="text" id="feedInput" placeholder="Что нового?">
-                    <button id="feedSendBtn">→</button>
+                    <button class="feed-send-btn" id="feedSendBtn">→</button>
                 </div>
             </div>
         </div>
@@ -719,17 +886,14 @@
         <div class="chat-panel" id="chatPanel">
             <div class="chat-panel-header">
                 <div class="back-to-feed" id="backToFeedBtn">←</div>
-                <div>
-                    <h2 id="chatName"></h2>
-                    <p id="chatStatus" style="font-size: 12px; color: var(--text-dim); margin-top: 4px;"></p>
-                </div>
+                <h2 id="chatName"></h2>
             </div>
             <div class="chat-messages" id="messagesList">
                 <div class="empty-state">Выберите чат</div>
             </div>
             <div class="chat-input-area">
                 <div class="chat-input-wrapper">
-                    <button class="chat-attach-btn" id="chatAttachBtn">📷</button>
+                    <button class="chat-attach-btn" id="chatAttachBtn">+</button>
                     <input type="text" id="messageInput" placeholder="Сообщение">
                     <button class="chat-send-btn" id="sendBtn">→</button>
                 </div>
@@ -741,8 +905,14 @@
 <div id="settingsModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">Настройки</div>
-        <div class="setting-row"><span>🌙 Тёмный режим</span><label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
-        <div class="setting-row"><span>🔔 Уведомления</span><label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label></div>
+        <div class="setting-row">
+            <span>Тёмный режим</span>
+            <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+            <span>Уведомления</span>
+            <label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label>
+        </div>
         <button id="closeSettingsBtn" class="auth-btn" style="margin-top: 20px;">Закрыть</button>
     </div>
 </div>
@@ -752,7 +922,7 @@
         <div class="modal-header">Профиль</div>
         <div class="avatar-preview" id="profileAvatarPreview"></div>
         <input type="text" id="profileName" class="auth-input" placeholder="Имя">
-        <input type="text" id="profileUsername" class="auth-input" placeholder="@username" readonly style="opacity:0.6">
+        <input type="text" id="profileUsername" class="auth-input" placeholder="username" readonly style="opacity:0.6">
         <input type="file" id="profileAvatarInput" accept="image/*" style="display: none;">
         <button id="uploadProfileBtn" class="auth-btn" style="margin-bottom: 10px;">Сменить фото</button>
         <button id="saveProfileBtn" class="auth-btn">Сохранить</button>
@@ -778,12 +948,12 @@
     let currentChat = null;
     let allUsers = [];
     let allGroups = [];
+    let allChannels = [];
     let allMessages = {};
     let allPosts = [];
     let isLoginMode = true;
     let isConnecting = false;
     let reconnectTimer = null;
-    let typingTimeout = null;
 
     const SESSION_KEY = 'envex_user_data';
 
@@ -818,9 +988,9 @@
         if(!ts) return 'никогда';
         const min = Math.floor((Date.now() - ts) / 60000);
         if(min < 1) return 'только что';
-        if(min < 60) return `${min} мин назад`;
-        if(min < 1440) return `${Math.floor(min / 60)} ч назад`;
-        return `${Math.floor(min / 1440)} д назад`;
+        if(min < 60) return `${min} мин`;
+        if(min < 1440) return `${Math.floor(min / 60)} ч`;
+        return `${Math.floor(min / 1440)} д`;
     }
 
     // ============ WEBSOCKET ============
@@ -856,14 +1026,12 @@
                     if(btn) btn.disabled = false;
                 }
                 
-                if(data.type === 'users') { allUsers = data.users; renderChats(); renderGroups(); renderChannels(); }
+                if(data.type === 'users') { allUsers = data.users; renderChats(); }
                 if(data.type === 'groups') { allGroups = data.groups; renderGroups(); }
-                if(data.type === 'posts') { allPosts = data.posts || []; renderFeed(); }
+                if(data.type === 'channels') { allChannels = data.channels; renderChannels(); }
                 
-                if(data.type === 'new_post') {
-                    allPosts.unshift(data.post);
-                    renderFeed();
-                }
+                if(data.type === 'posts') { allPosts = data.posts; renderFeed(); }
+                if(data.type === 'new_post') { allPosts.unshift(data.post); renderFeed(); }
                 
                 if(data.type === 'history') {
                     allMessages = {};
@@ -914,26 +1082,30 @@
         const term = document.getElementById('searchInput').value.toLowerCase();
         let chats = [];
         allUsers.filter(u => u.username !== currentUser).forEach(u => {
-            if(!term || u.username.includes(term) || u.name.includes(term)) {
+            if(!term || u.username.includes(term) || u.name.toLowerCase().includes(term)) {
                 chats.push({ type: 'user', id: u.username, name: u.name, avatar: u.avatar, online: u.online, lastSeen: u.lastSeen });
             }
         });
         const container = document.getElementById('chatsList');
-        if(chats.length === 0) { container.innerHTML = '<div class="empty-state">Никого не найдено</div>'; return; }
+        if(chats.length === 0) { container.innerHTML = '<div class="empty-state">Нет контактов</div>'; return; }
         container.innerHTML = chats.map(c => `
             <div class="chat-item ${currentChat?.id === c.id ? 'active' : ''}" onclick="selectChat('user','${c.id}','${c.name.replace(/'/g,"\\'")}')">
                 <div class="chat-avatar" style="${c.avatar ? `background-image:url(${c.avatar});background-size:cover;` : ''}">${!c.avatar ? (c.name.charAt(0) || 'U').toUpperCase() : ''}</div>
-                <div class="chat-info"><div class="chat-name">${c.name}</div><div class="chat-status">${c.online ? 'онлайн' : `был ${formatLastSeen(c.lastSeen)}`}</div></div>
+                <div class="chat-info">
+                    <div class="chat-name">${c.name}</div>
+                    <div class="chat-status">${c.online ? 'онлайн' : `был ${formatLastSeen(c.lastSeen)}`}</div>
+                </div>
             </div>
         `).join('');
     }
     
     function renderGroups() {
         const container = document.getElementById('groupsList');
+        if(!container) return;
         if(!allGroups.length) { container.innerHTML = '<div class="empty-state">Нет групп</div>'; return; }
         container.innerHTML = allGroups.map(g => `
             <div class="chat-item ${currentChat?.id === g.id ? 'active' : ''}" onclick="selectChat('group','${g.id}','${g.name.replace(/'/g,"\\'")}')">
-                <div class="chat-avatar" style="${g.avatar ? `background-image:url(${g.avatar});background-size:cover;` : ''}">${!g.avatar ? '👥' : ''}</div>
+                <div class="chat-avatar">${g.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-info"><div class="chat-name">${g.name}</div><div class="chat-status">${g.members.length} участников</div></div>
             </div>
         `).join('');
@@ -941,10 +1113,11 @@
     
     function renderChannels() {
         const container = document.getElementById('channelsList');
+        if(!container) return;
         if(!allChannels.length) { container.innerHTML = '<div class="empty-state">Нет каналов</div>'; return; }
         container.innerHTML = allChannels.map(c => `
             <div class="chat-item ${currentChat?.id === c.id ? 'active' : ''}" onclick="selectChat('channel','${c.id}','${c.name.replace(/'/g,"\\'")}')">
-                <div class="chat-avatar" style="${c.avatar ? `background-image:url(${c.avatar});background-size:cover;` : ''}">${!c.avatar ? '📢' : ''}</div>
+                <div class="chat-avatar">${c.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-info"><div class="chat-name">${c.name}</div><div class="chat-status">${c.subscribers.length} подписчиков</div></div>
             </div>
         `).join('');
@@ -952,15 +1125,23 @@
     
     function renderFeed() {
         const container = document.getElementById('feedPosts');
-        if(!allPosts.length) { container.innerHTML = '<div class="empty-state">Нет постов. Напишите что-нибудь!</div>'; return; }
+        if(!allPosts.length) { container.innerHTML = '<div class="empty-state">Нет сообщений. Напишите первым!</div>'; return; }
         container.innerHTML = allPosts.map(p => `
             <div class="post-card">
                 <div class="post-header">
-                    <div class="post-avatar" style="${p.avatar ? `background-image:url(${p.avatar});background-size:cover;` : ''}">${!p.avatar ? (p.author.charAt(1) || p.author.charAt(0)).toUpperCase() : ''}</div>
-                    <div class="post-author"><h4>${p.authorName || p.author}</h4><span>${p.timeStr || new Date(p.time).toLocaleString()}</span></div>
+                    <div class="post-avatar" style="${p.authorAvatar ? `background-image:url(${p.authorAvatar});background-size:cover;` : ''}">${!p.authorAvatar ? (p.authorName?.charAt(0) || p.author.charAt(1) || p.author.charAt(0)).toUpperCase() : ''}</div>
+                    <div class="post-author">
+                        <h4>${p.authorName || p.author}</h4>
+                        <span>${p.timeStr || new Date(p.time).toLocaleString()}</span>
+                    </div>
                 </div>
-                <div class="post-content">${p.isImage ? `<img src="${p.text}" alt="post">` : escapeHtml(p.text)}</div>
-                <div class="post-actions"><div class="post-action">❤️ ${p.likes || 0}</div><div class="post-action">💬 ${p.comments || 0}</div></div>
+                <div class="post-content">
+                    ${p.isImage ? `<img src="${p.text}" alt="post" onclick="viewImage('${p.text}')">` : escapeHtml(p.text)}
+                </div>
+                <div class="post-actions">
+                    <div class="post-action">❤️ ${p.likes || 0}</div>
+                    <div class="post-action">💬 ${p.comments || 0}</div>
+                </div>
             </div>
         `).join('');
     }
@@ -968,11 +1149,6 @@
     window.selectChat = (type, id, name) => {
         currentChat = { type, id, name };
         document.getElementById('chatName').textContent = name;
-        if(type === 'user') {
-            const u = allUsers.find(u => u.username === id);
-            document.getElementById('chatStatus').innerHTML = u?.online ? 'онлайн' : `был ${formatLastSeen(u?.lastSeen)}`;
-        } else document.getElementById('chatStatus').innerHTML = type === 'group' ? 'групповой чат' : 'канал';
-        
         document.getElementById('publicFeed').classList.add('hide');
         document.getElementById('chatPanel').classList.add('active');
         if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
@@ -986,11 +1162,30 @@
         container.innerHTML = msgs.map(msg => {
             const isSent = msg.from === currentUser;
             let status = '';
-            if(isSent) { if(msg.status === 'sent') status = '✓'; else if(msg.status === 'delivered') status = '✓✓'; else if(msg.status === 'read') status = '✓✓✓'; }
-            return `<div class="message ${isSent ? 'sent' : 'received'}"><div class="bubble"><div class="message-text">${msg.isImage ? `<img src="${msg.text}" alt="photo" onclick="viewImage('${msg.text}')">` : escapeHtml(msg.text)}</div><div class="message-meta"><span>${msg.timeStr}</span>${status ? `<span>${status}</span>` : ''}${msg.edited ? '<span>ред</span>' : ''}</div></div></div>`;
+            if(isSent) {
+                if(msg.status === 'sent') status = '✓';
+                else if(msg.status === 'delivered') status = '✓✓';
+                else if(msg.status === 'read') status = '✓✓✓';
+            }
+            return `
+                <div class="message ${isSent ? 'sent' : 'received'}">
+                    <div class="bubble">
+                        <div class="message-text">${msg.isImage ? `<img src="${msg.text}" alt="photo" onclick="viewImage('${msg.text}')">` : escapeHtml(msg.text)}</div>
+                        <div class="message-meta">
+                            <span>${msg.timeStr}</span>
+                            ${status ? `<span>${status}</span>` : ''}
+                            ${msg.edited ? '<span>ред</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
         }).join('');
         container.scrollTop = container.scrollHeight;
-        msgs.forEach(msg => { if(!msg.read && msg.from !== currentUser && ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'read', messageId: msg.id })); });
+        msgs.forEach(msg => {
+            if(!msg.read && msg.from !== currentUser && ws?.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'read', messageId: msg.id }));
+            }
+        });
     }
     
     function sendMessage() {
@@ -1078,33 +1273,46 @@
     
     function openGroupModal() {
         const list = document.getElementById('groupMembersList');
-        list.innerHTML = allUsers.filter(u => u.username !== currentUser).map(u => `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);"><span>${u.name || u.username} (${u.username})</span><input type="checkbox" value="${u.username}" class="group-checkbox"></div>`).join('');
+        list.innerHTML = allUsers.filter(u => u.username !== currentUser).map(u => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                <span>${u.name || u.username}</span>
+                <input type="checkbox" value="${u.username}" class="group-checkbox" style="width:18px; height:18px;">
+            </div>
+        `).join('');
         document.getElementById('groupModal').style.display = 'flex';
     }
     
     function createGroup() {
         const name = document.getElementById('groupName').value.trim();
-        if(!name) return alert('Введите название');
+        if(!name) return alert('Введите название группы');
         const members = Array.from(document.querySelectorAll('.group-checkbox:checked')).map(cb => cb.value);
         if(ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'create_group', name, members }));
         document.getElementById('groupModal').style.display = 'none';
         document.getElementById('groupName').value = '';
     }
     
-    // ============ ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ============
+    // ============ ИНИЦИАЛИЗАЦИЯ ============
     document.getElementById('authSwitch').onclick = () => {
         isLoginMode = !isLoginMode;
         const btn = document.getElementById('authSubmitBtn');
         const nameField = document.getElementById('authName');
         const sw = document.getElementById('authSwitch');
-        if(isLoginMode) { btn.textContent = 'Войти'; sw.innerHTML = 'Нет аккаунта? <span>Создать</span>'; nameField.style.display = 'none'; }
-        else { btn.textContent = 'Создать аккаунт'; sw.innerHTML = 'Уже есть аккаунт? <span>Войти</span>'; nameField.style.display = 'block'; }
+        if(isLoginMode) {
+            btn.textContent = 'Войти';
+            sw.innerHTML = 'Нет аккаунта? <span>Создать</span>';
+            nameField.style.display = 'none';
+        } else {
+            btn.textContent = 'Создать аккаунт';
+            sw.innerHTML = 'Уже есть аккаунт? <span>Войти</span>';
+            nameField.style.display = 'block';
+        }
     };
     
     document.getElementById('authSubmitBtn').onclick = () => {
-        const u = document.getElementById('authUsername').value.trim(), p = document.getElementById('authPassword').value, n = document.getElementById('authName').value.trim();
+        const u = document.getElementById('authUsername').value.trim();
+        const p = document.getElementById('authPassword').value;
+        const n = document.getElementById('authName').value.trim();
         if(!u || !p) return showError('Заполните поля');
-        if(!u.startsWith('@')) return showError('Username должен начинаться с @');
         if(!isLoginMode && !n) return showError('Введите имя');
         connectAndAuth(isLoginMode ? 'login' : 'register', u, p, n);
     };
