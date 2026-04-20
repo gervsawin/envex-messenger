@@ -1,4 +1,4 @@
-ь<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -52,7 +52,7 @@
             font-size: 14px;
         }
 
-        /* Splash Screen */
+        /* Splash */
         .splash {
             position: fixed;
             inset: 0;
@@ -188,24 +188,9 @@
             height: 100%;
         }
 
-        /* Mobile menu button */
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            width: 52px;
-            height: 52px;
-            background: var(--accent);
-            border: none;
-            border-radius: 26px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 300;
-            box-shadow: var(--shadow);
-            align-items: center;
-            justify-content: center;
+        .main-layout {
+            display: flex;
+            height: 100%;
         }
 
         /* Sidebar */
@@ -216,7 +201,6 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -832,12 +816,10 @@
                 width: 280px;
                 z-index: 300;
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
             .sidebar.open {
                 transform: translateX(0);
-            }
-            .mobile-menu-btn {
-                display: flex;
             }
             .top-nav {
                 padding: 0 16px;
@@ -868,7 +850,6 @@
 </head>
 <body>
 
-<!-- Splash Screen -->
 <div class="splash" id="splashScreen">
     <div class="splash-content">
         <div class="splash-logo">envex</div>
@@ -996,49 +977,7 @@
     </div>
 </div>
 
-<button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-
-<!-- Modals -->
-<div id="editNameModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">Изменить имя</div>
-        <input type="text" id="newNameInput" class="auth-input" placeholder="Новое имя">
-        <button id="saveNameBtn" class="auth-btn">Сохранить</button>
-        <button id="closeNameModal" class="auth-btn" style="margin-top: 10px; background: var(--bg); color: var(--text);">Отмена</button>
-    </div>
-</div>
-
-<div id="passwordModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">Изменить пароль</div>
-        <input type="password" id="oldPassword" class="auth-input" placeholder="Старый пароль">
-        <input type="password" id="newPassword" class="auth-input" placeholder="Новый пароль">
-        <input type="password" id="confirmPassword" class="auth-input" placeholder="Подтвердите пароль">
-        <button id="savePasswordBtn" class="auth-btn">Сохранить</button>
-        <button id="closePasswordModal" class="auth-btn" style="margin-top: 10px; background: var(--bg); color: var(--text);">Отмена</button>
-    </div>
-</div>
-
-<div id="avatarModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">Фото профиля</div>
-        <div class="avatar-preview" id="avatarPreview"></div>
-        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-        <button id="uploadAvatarBtn" class="auth-btn">Загрузить</button>
-        <button id="closeAvatarModal" class="auth-btn" style="margin-top: 10px; background: var(--bg); color: var(--text);">Отмена</button>
-    </div>
-</div>
-
-<div id="groupModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">Создать группу</div>
-        <input type="text" id="groupName" class="auth-input" placeholder="Название группы">
-        <div class="settings-title" style="margin: 16px 0 8px 0;">Участники</div>
-        <div id="groupMembersList" style="max-height: 200px; overflow-y: auto;"></div>
-        <button id="createGroupConfirm" class="auth-btn" style="margin-top: 16px;">Создать</button>
-        <button id="closeGroupModal" class="auth-btn" style="margin-top: 10px; background: var(--bg); color: var(--text);">Отмена</button>
-    </div>
-</div>
+<button class="mobile-menu-btn" style="position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: var(--accent); border: none; border-radius: 25px; color: white; font-size: 24px; cursor: pointer; z-index: 300; display: none; box-shadow: var(--shadow);" id="mobileMenuBtn">☰</button>
 
 <script>
     // ============ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ============
@@ -1227,7 +1166,7 @@
             </div>
         `).join('');
         
-        document.querySelectorAll('.chat-item').forEach(el => {
+        document.querySelectorAll('#chatsList .chat-item').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = el.dataset.chatId;
@@ -1591,6 +1530,19 @@
     const sidebar = document.getElementById('sidebar');
     let sidebarOpen = false;
     
+    if(window.innerWidth <= 768) {
+        mobileMenuBtn.style.display = 'flex';
+    }
+    
+    window.addEventListener('resize', () => {
+        if(window.innerWidth <= 768) {
+            mobileMenuBtn.style.display = 'flex';
+        } else {
+            mobileMenuBtn.style.display = 'none';
+            sidebar.classList.remove('open');
+        }
+    });
+    
     mobileMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         sidebar.classList.toggle('open');
@@ -1598,7 +1550,7 @@
     });
     
     document.addEventListener('click', (e) => {
-        if(window.innerWidth <= 768 && sidebarOpen && !sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+        if(window.innerWidth <= 768 && sidebarOpen && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
             sidebar.classList.remove('open');
             sidebarOpen = false;
         }
