@@ -15,7 +15,7 @@
 
         :root {
             --bg: #0a0a0f;
-            --bg-side: rgba(15, 15, 20, 0.85);
+            --bg-side: rgba(15, 15, 20, 0.95);
             --bg-card: rgba(22, 22, 28, 0.9);
             --border: rgba(32, 32, 42, 0.5);
             --text: #ffffff;
@@ -28,7 +28,6 @@
             --online: #22c55e;
             --hover: rgba(255,255,255,0.05);
             --shadow: 0 8px 32px rgba(0,0,0,0.3);
-            --blur: blur(12px);
         }
 
         body.theme-red { --accent: #ef4444; --accent-gradient: linear-gradient(135deg, #ef4444, #f97316); --sent: #ef4444; }
@@ -41,7 +40,7 @@
 
         body.light {
             --bg: #f0f2f5;
-            --bg-side: rgba(255,255,255,0.85);
+            --bg-side: rgba(255,255,255,0.95);
             --bg-card: rgba(255,255,255,0.9);
             --border: rgba(0,0,0,0.08);
             --text: #1a1a2e;
@@ -59,17 +58,11 @@
             height: 100vh;
             overflow: hidden;
             font-size: 14px;
-            transition: background 0.2s;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         /* Splash */
@@ -112,7 +105,6 @@
         .auth.visible { opacity: 1; visibility: visible; }
         .auth-card {
             background: var(--bg-card);
-            backdrop-filter: var(--blur);
             border-radius: 28px;
             padding: 48px 40px;
             width: 420px;
@@ -140,7 +132,6 @@
             font-size: 14px;
             margin-bottom: 12px;
             outline: none;
-            transition: 0.2s;
         }
         .auth-input:focus { border-color: var(--accent); }
         .policy-btn {
@@ -163,7 +154,6 @@
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
         }
         .auth-btn:hover { transform: translateY(-1px); opacity: 0.9; }
         .auth-switch {
@@ -192,11 +182,11 @@
             height: 100%;
         }
 
-        /* Левая панель (чаты) */
+        /* Левая панель (чаты + профиль) */
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: var(--bg-side);
-            backdrop-filter: var(--blur);
+            backdrop-filter: blur(12px);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -211,10 +201,11 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 20px;
+            cursor: pointer;
         }
         .avatar {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: var(--accent-gradient);
             border-radius: 50%;
             background-size: cover;
@@ -222,46 +213,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s;
+            font-weight: 600;
+            font-size: 20px;
         }
-        .avatar:hover { transform: scale(1.02); }
-        .user-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-        .user-details p { font-size: 11px; color: var(--online); }
+        .user-details h3 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+        .user-details p { font-size: 12px; color: var(--online); }
         .search-input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 14px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
-            font-size: 13px;
+            font-size: 14px;
             outline: none;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         .search-input:focus { border-color: var(--accent); }
-        .tabs {
-            display: flex;
-            gap: 8px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-        .tab-btn.active {
-            background: var(--accent-gradient);
-            color: white;
-            border-color: transparent;
+        .search-input::placeholder { color: var(--text-tertiary); }
+
+        .section-title {
+            padding: 0 20px 8px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            letter-spacing: 0.5px;
         }
         .chats-scroll {
             flex: 1;
@@ -274,7 +251,7 @@
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 14px;
             transition: 0.15s;
         }
         .chat-item:hover { background: var(--hover); transform: translateX(4px); }
@@ -292,8 +269,69 @@
             background-position: center;
         }
         .chat-info { flex: 1; }
-        .chat-name { font-weight: 500; font-size: 14px; margin-bottom: 2px; }
+        .chat-name { font-weight: 500; font-size: 15px; margin-bottom: 2px; }
         .chat-status { font-size: 11px; color: var(--text-secondary); }
+
+        /* Настройки (внутри левой панели) */
+        .settings-section {
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding: 16px 20px;
+        }
+        .setting-row {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .setting-row:hover { background: var(--hover); transform: translateX(4px); }
+        .color-themes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .color-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { border-color: white; box-shadow: 0 0 0 2px var(--bg); }
+        .color-default { background: #3b82f6; }
+        .color-red { background: #ef4444; }
+        .color-pink { background: #ec4899; }
+        .color-yellow { background: #eab308; }
+        .color-green { background: #22c55e; }
+        .color-purple { background: #a855f7; }
+        .color-orange { background: #f97316; }
+        .color-cyan { background: #06b6d4; }
+        .theme-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .theme-option {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .theme-option.active {
+            background: var(--accent);
+            color: white;
+        }
 
         /* Центр (чат) */
         .chat-panel {
@@ -305,10 +343,24 @@
         .chat-header {
             padding: 16px 24px;
             background: var(--bg-side);
-            backdrop-filter: var(--blur);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
-        .chat-header h2 { font-size: 17px; font-weight: 600; }
+        .chat-back {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .chat-header h2 { font-size: 18px; font-weight: 600; }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -399,120 +451,6 @@
             padding: 48px 20px;
         }
 
-        /* Правая панель (профиль + настройки) */
-        .right-panel {
-            width: 300px;
-            background: var(--bg-side);
-            backdrop-filter: var(--blur);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-        .profile-view {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-        .profile-header {
-            text-align: center;
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            background: var(--accent-gradient);
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .profile-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .profile-username { font-size: 11px; color: var(--text-secondary); margin-bottom: 16px; }
-        .profile-stats {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-        }
-        .stat-value { font-size: 18px; font-weight: 700; }
-        .stat-label { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
-        .settings-section {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-        }
-        .settings-title {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-tertiary);
-            margin: 12px 0 8px 0;
-        }
-        .settings-title:first-child { margin-top: 0; }
-        .setting-row {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .setting-row:hover { background: var(--hover); transform: translateX(4px); }
-        .color-themes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .color-option {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s;
-            border: 2px solid transparent;
-        }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.active { border-color: white; box-shadow: 0 0 0 2px var(--bg); }
-        .color-default { background: #3b82f6; }
-        .color-red { background: #ef4444; }
-        .color-pink { background: #ec4899; }
-        .color-yellow { background: #eab308; }
-        .color-green { background: #22c55e; }
-        .color-purple { background: #a855f7; }
-        .color-orange { background: #f97316; }
-        .color-cyan { background: #06b6d4; }
-        .theme-options {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .theme-option {
-            flex: 1;
-            padding: 8px;
-            background: var(--bg);
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .theme-option.active {
-            background: var(--accent);
-            color: white;
-        }
-
         /* Modal */
         .modal {
             position: fixed;
@@ -527,23 +465,13 @@
         }
         .modal-content {
             background: var(--bg-card);
-            backdrop-filter: var(--blur);
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 24px;
             width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-width: 400px;
         }
         .modal-header { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
         .avatar-preview {
             width: 80px;
             height: 80px;
@@ -565,21 +493,20 @@
         }
 
         /* Mobile */
-        @media (max-width: 900px) {
-            .right-panel { width: 280px; }
-        }
         @media (max-width: 768px) {
-            .sidebar, .right-panel {
+            .sidebar {
                 position: fixed;
+                left: 0;
                 top: 0;
                 bottom: 0;
+                width: 85%;
+                max-width: 300px;
                 z-index: 300;
                 transform: translateX(-100%);
                 transition: transform 0.3s;
             }
             .sidebar.open { transform: translateX(0); }
-            .right-panel { right: 0; transform: translateX(100%); border-left: none; border-right: 1px solid var(--border); }
-            .right-panel.open { transform: translateX(0); }
+            .chat-back { display: flex; }
             .chat-panel { z-index: 200; }
             .message { max-width: 85%; }
             .auth-card { padding: 32px 24px; width: 90%; }
@@ -613,29 +540,49 @@
 <!-- App -->
 <div class="app" id="appScreen">
     <div class="main-layout">
-        <!-- Левая панель: чаты -->
+        <!-- Левая панель: чаты + профиль + настройки -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="user-card">
-                    <div class="avatar" id="sidebarAvatar" onclick="openAvatarModal()">?</div>
+                <div class="user-card" onclick="toggleSettings()">
+                    <div class="avatar" id="sidebarAvatar">?</div>
                     <div class="user-details">
                         <h3 id="sidebarUserName"></h3>
                         <p>онлайн</p>
                     </div>
                 </div>
-                <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
-                <div class="tabs">
-                    <div class="tab-btn active" id="chatsTabBtn">Чаты</div>
-                    <div class="tab-btn" id="groupsTabBtn">Группы</div>
-                </div>
+                <input type="text" id="searchInput" class="search-input" placeholder="Поиск по @username">
             </div>
+
+            <!-- Список чатов -->
             <div class="chats-scroll" id="chatsList"></div>
-            <div class="chats-scroll" id="groupsList" style="display: none;"></div>
+
+            <!-- Настройки (скрыты по умолчанию, появляются при клике на аватар) -->
+            <div id="settingsSection" class="settings-section" style="display: none;">
+                <div class="setting-row" id="editNameRow"><span>Имя</span><span class="setting-value" id="editNameValue"></span></div>
+                <div class="setting-row" id="changePasswordRow"><span>Пароль</span><span class="setting-value">••••••••</span></div>
+                <div class="color-themes">
+                    <div class="color-option color-default" onclick="setColorTheme('default')" title="Синяя"></div>
+                    <div class="color-option color-red" onclick="setColorTheme('red')" title="Красная"></div>
+                    <div class="color-option color-pink" onclick="setColorTheme('pink')" title="Розовая"></div>
+                    <div class="color-option color-yellow" onclick="setColorTheme('yellow')" title="Жёлтая"></div>
+                    <div class="color-option color-green" onclick="setColorTheme('green')" title="Зелёная"></div>
+                    <div class="color-option color-purple" onclick="setColorTheme('purple')" title="Фиолетовая"></div>
+                    <div class="color-option color-orange" onclick="setColorTheme('orange')" title="Оранжевая"></div>
+                    <div class="color-option color-cyan" onclick="setColorTheme('cyan')" title="Голубая"></div>
+                </div>
+                <div class="theme-options">
+                    <div class="theme-option" data-theme="dark">Тёмная</div>
+                    <div class="theme-option" data-theme="light">Светлая</div>
+                </div>
+                <div class="setting-row" id="clearDataRow"><span>Очистить кэш</span><span>→</span></div>
+                <div class="setting-row" id="logoutRow"><span>Выйти</span><span style="color:#ef4444;">→</span></div>
+            </div>
         </div>
 
         <!-- Центр: чат -->
         <div class="chat-panel" id="chatPanel">
             <div class="chat-header">
+                <div class="chat-back" id="chatBackBtn">←</div>
                 <h2 id="chatName"></h2>
             </div>
             <div class="chat-messages" id="messagesList"><div class="empty-state">Выберите чат</div></div>
@@ -647,55 +594,13 @@
                 </div>
             </div>
         </div>
-
-        <!-- Правая панель: профиль + настройки -->
-        <div class="right-panel" id="rightPanel">
-            <div class="profile-view" id="profileView">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="profileAvatar" onclick="openAvatarModal()">?</div>
-                    <div class="profile-name" id="profileName"></div>
-                    <div class="profile-username" id="profileUsername"></div>
-                    <div class="profile-stats">
-                        <div><div class="stat-value" id="statMessages">0</div><div class="stat-label">сообщений</div></div>
-                        <div><div class="stat-value" id="statChats">0</div><div class="stat-label">чатов</div></div>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-title">Аккаунт</div>
-                    <div class="setting-row" id="editNameRow"><span>Имя</span><span class="setting-value" id="editNameValue"></span></div>
-                    <div class="setting-row" id="changePasswordRow"><span>Пароль</span><span class="setting-value">••••••••</span></div>
-
-                    <div class="settings-title">Цветовая тема</div>
-                    <div class="color-themes">
-                        <div class="color-option color-default" onclick="setColorTheme('default')" title="Синяя"></div>
-                        <div class="color-option color-red" onclick="setColorTheme('red')" title="Красная"></div>
-                        <div class="color-option color-pink" onclick="setColorTheme('pink')" title="Розовая"></div>
-                        <div class="color-option color-yellow" onclick="setColorTheme('yellow')" title="Жёлтая"></div>
-                        <div class="color-option color-green" onclick="setColorTheme('green')" title="Зелёная"></div>
-                        <div class="color-option color-purple" onclick="setColorTheme('purple')" title="Фиолетовая"></div>
-                        <div class="color-option color-orange" onclick="setColorTheme('orange')" title="Оранжевая"></div>
-                        <div class="color-option color-cyan" onclick="setColorTheme('cyan')" title="Голубая"></div>
-                    </div>
-
-                    <div class="settings-title">Тёмный режим</div>
-                    <div class="theme-options">
-                        <div class="theme-option" data-theme="dark">Тёмная</div>
-                        <div class="theme-option" data-theme="light">Светлая</div>
-                    </div>
-
-                    <div class="settings-title">Данные</div>
-                    <div class="setting-row" id="clearDataRow"><span>Очистить кэш</span><span>→</span></div>
-                    <div class="setting-row" id="logoutRow"><span>Выйти</span><span style="color:#ef4444;">→</span></div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; background:var(--accent-gradient); border:none; border-radius:50%; color:white; font-size:22px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
 
 <!-- Модалки -->
-<div id="policyModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><div class="modal-header" style="margin-bottom:0;">Политика использования</div><button class="modal-close" id="closePolicyBtn">&times;</button></div><div class="policy-text"><p><strong>Дата вступления в силу: 1.05.2026</strong></p><p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p><h3>1. Общие положения</h3><p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения. Пользователь обязуется использовать сервис только в законных целях и соблюдать применимое законодательство.</p><h3>2. Регистрация и аккаунт</h3><ul><li>Пользователь обязан предоставлять достоверную информацию.</li><li>Вы несете ответственность за безопасность своего аккаунта.</li><li>Запрещено передавать доступ третьим лицам.</li></ul><h3>3. Допустимое использование</h3><p>Пользователям запрещается:</p><ul><li>Нарушать законы и права третьих лиц</li><li>Распространять спам, мошеннический контент или вредоносное ПО</li><li>Публиковать угрозы, оскорбления, призывы к насилию</li><li>Загружать незаконный контент (включая пиратские материалы)</li><li>Использовать Envex для преследования или травли других пользователей</li></ul><h3>4. Контент пользователей</h3><ul><li>Пользователь несет полную ответственность за отправляемый контент</li><li>Envex не контролирует каждое сообщение, но оставляет за собой право удалять контент, нарушающий правила</li><li>Пользователь предоставляет Envex право обрабатывать контент исключительно для работы сервиса</li></ul><h3>5. Конфиденциальность</h3><ul><li>Мы уважаем вашу приватность и обрабатываем данные в соответствии с Политикой конфиденциальности</li><li>Сообщения могут быть защищены сквозным шифрованием (если применимо)</li><li>Мы не продаем личные данные третьим лицам</li></ul><h3>6. Ограничение ответственности</h3><ul><li>Envex предоставляется «как есть»</li><li>Мы не гарантируем бесперебойную работу сервиса</li><li>Envex не несет ответственности за действия пользователей</li></ul><h3>7. Блокировка и удаление аккаунта</h3><p>Мы можем:</p><ul><li>Ограничить доступ или удалить аккаунт при нарушении правил</li><li>Удалять контент без предварительного уведомления</li></ul><h3>8. Интеллектуальная собственность</h3><ul><li>Все права на платформу Envex принадлежат разработчику</li><li>Пользователи не имеют права копировать, модифицировать или распространять сервис без разрешения</li></ul><h3>9. Изменения политики</h3><p>Мы можем обновлять данную политику. Продолжение использования сервиса означает согласие с изменениями.</p></div></div></div>
+<div id="policyModal" class="modal"><div class="modal-content"><div class="modal-header">Политика использования</div><div class="policy-text"><p><strong>Дата вступления в силу: 1.05.2026</strong></p><p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p><h3>1. Общие положения</h3><p>Envex — платформа для обмена сообщениями. Пользователь обязуется использовать сервис в законных целях.</p><h3>2. Регистрация и аккаунт</h3><ul><li>Пользователь обязан предоставлять достоверную информацию.</li><li>Запрещено передавать доступ третьим лицам.</li></ul><h3>3. Допустимое использование</h3><p>Запрещается: спам, угрозы, оскорбления, незаконный контент.</p><h3>4. Конфиденциальность</h3><p>Мы не продаем личные данные третьим лицам.</p></div><button class="auth-btn" id="closePolicyBtn" style="margin-top:16px;">Закрыть</button></div></div>
 
 <div id="editNameModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить имя</div><input type="text" id="newNameInput" class="auth-input"><button id="saveNameBtn" class="auth-btn">Сохранить</button><button id="closeNameModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="passwordModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить пароль</div><input type="password" id="oldPassword" class="auth-input" placeholder="Старый пароль"><input type="password" id="newPassword" class="auth-input" placeholder="Новый пароль"><input type="password" id="confirmPassword" class="auth-input" placeholder="Подтвердите"><button id="savePasswordBtn" class="auth-btn">Сохранить</button><button id="closePasswordModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
@@ -712,7 +617,7 @@
     function showError(m){ const e=document.getElementById('errorMsg'); if(e){ e.textContent=m; setTimeout(()=>e.textContent='',3000); } }
     function getWsUrl(){ return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host; }
 
-    // Цветовые темы
+    // Темы
     function setColorTheme(theme) {
         document.body.classList.remove('theme-red', 'theme-pink', 'theme-yellow', 'theme-green', 'theme-purple', 'theme-orange', 'theme-cyan');
         if (theme !== 'default') document.body.classList.add(`theme-${theme}`);
@@ -736,6 +641,13 @@
         const theme = localStorage.getItem('envex_theme') || 'dark';
         toggleTheme(theme);
         loadColorTheme();
+    }
+
+    let settingsVisible = false;
+    function toggleSettings() {
+        const section = document.getElementById('settingsSection');
+        settingsVisible = !settingsVisible;
+        section.style.display = settingsVisible ? 'block' : 'none';
     }
 
     function connectAndAuth(t,u,p,n){
@@ -786,33 +698,36 @@
     
     function checkSession(){ const s=loadUserData(); if(s){ connectAndAuth('login',s.username,s.password,s.name); return true; } return false; }
     function updateUI(n,u,a){
-        document.getElementById('profileName').textContent=n;
-        document.getElementById('profileUsername').textContent=u;
         document.getElementById('sidebarUserName').textContent=n;
         document.getElementById('editNameValue').textContent=n;
-        [document.getElementById('profileAvatar'), document.getElementById('sidebarAvatar')].forEach(el=>{
+        const avatars = document.querySelectorAll('.avatar');
+        avatars.forEach(el => {
             if(a){ el.style.backgroundImage=`url(${a})`; el.style.backgroundSize='cover'; el.textContent=''; }
             else{ el.style.backgroundImage=''; el.textContent=n?.charAt(0).toUpperCase()||'?'; }
         });
     }
-    function updateStats(){ let c=0; for(let id in allMessages) c+=allMessages[id].length; document.getElementById('statMessages').textContent=c; document.getElementById('statChats').textContent=allUsers.filter(u=>u.username!==currentUser).length; }
+    function updateStats(){ let c=0; for(let id in allMessages) c+=allMessages[id].length; document.getElementById('statMessages')?.setAttribute('data-value',c); }
     
     function renderChats(){
-        const term=document.getElementById('searchInput').value.toLowerCase();
-        const chats=allUsers.filter(u=>u.username!==currentUser).filter(u=>!term || u.username.includes(term) || u.name.toLowerCase().includes(term));
-        const container=document.getElementById('chatsList');
-        if(!chats.length){ container.innerHTML='<div class="empty-state">Нет контактов</div>'; return; }
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        let chats = allUsers.filter(u => u.username !== currentUser);
+        if (term) {
+            chats = chats.filter(u => u.username.toLowerCase().includes(term));
+        }
+        const container = document.getElementById('chatsList');
+        if(!chats.length){ container.innerHTML='<div class="empty-state">Никого не найдено</div>'; return; }
         container.innerHTML=chats.map(c=>`<div class="chat-item" onclick="selectChat('${c.username}')"><div class="chat-avatar" style="${c.avatar?`background-image:url(${c.avatar});background-size:cover;`:''}">${!c.avatar?(c.name.charAt(0)||'U').toUpperCase():''}</div><div class="chat-info"><div class="chat-name">${c.name}</div><div class="chat-status">${c.online?'онлайн':'оффлайн'}</div></div></div>`).join('');
     }
     
     function renderGroups(){
-        const container=document.getElementById('groupsList');
+        const container = document.getElementById('groupsList');
+        if(!container) return;
         if(!allGroups.length){ container.innerHTML='<div class="empty-state">Нет групп</div>'; return; }
         container.innerHTML=allGroups.map(g=>`<div class="chat-item" onclick="selectGroup('${g.id}')"><div class="chat-avatar">${g.name.charAt(0).toUpperCase()}</div><div class="chat-info"><div class="chat-name">${g.name}</div><div class="chat-status">${g.members.length} участников</div></div></div>`).join('');
     }
     
-    window.selectChat=(id)=>{ const u=allUsers.find(u=>u.username===id); if(!u) return; currentChat={type:'user',id,name:u.name}; document.getElementById('chatName').textContent=u.name; renderMessages(); };
-    window.selectGroup=(id)=>{ const g=allGroups.find(g=>g.id===id); if(!g) return; currentChat={type:'group',id,name:g.name}; document.getElementById('chatName').textContent=g.name; renderMessages(); };
+    window.selectChat=(id)=>{ const u=allUsers.find(u=>u.username===id); if(!u) return; currentChat={type:'user',id,name:u.name}; document.getElementById('chatName').textContent=u.name; document.getElementById('chatPanel').style.display='flex'; if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open'); renderMessages(); };
+    window.selectGroup=(id)=>{ const g=allGroups.find(g=>g.id===id); if(!g) return; currentChat={type:'group',id,name:g.name}; document.getElementById('chatName').textContent=g.name; document.getElementById('chatPanel').style.display='flex'; if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open'); renderMessages(); };
     
     function renderMessages(){
         const msgs=allMessages[currentChat?.id]||[];
@@ -832,9 +747,8 @@
     // Модалки
     document.getElementById('policyBtn').onclick = () => document.getElementById('policyModal').style.display = 'flex';
     document.getElementById('closePolicyBtn').onclick = () => document.getElementById('policyModal').style.display = 'none';
-    document.getElementById('policyModal').onclick = (e) => { if(e.target === document.getElementById('policyModal')) document.getElementById('policyModal').style.display = 'none'; };
     
-    function openEditNameModal(){ document.getElementById('newNameInput').value=document.getElementById('profileName').textContent; document.getElementById('editNameModal').style.display='flex'; }
+    function openEditNameModal(){ document.getElementById('newNameInput').value=document.getElementById('sidebarUserName').textContent; document.getElementById('editNameModal').style.display='flex'; }
     function saveName(){ const n=document.getElementById('newNameInput').value.trim(); if(!n) return showError('Введите имя'); if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', name:n })); document.getElementById('editNameModal').style.display='none'; }
     function openPasswordModal(){ document.getElementById('passwordModal').style.display='flex'; }
     function savePassword(){ const old=document.getElementById('oldPassword').value, pwd=document.getElementById('newPassword').value, conf=document.getElementById('confirmPassword').value; if(!old||!pwd) return showError('Заполните поля'); if(pwd!==conf) return showError('Пароли не совпадают'); const s=loadUserData(); if(s && s.password!==old) return showError('Неверный старый пароль'); if(s) saveUserData(s.username,pwd,s.name,s.avatar); showError('Пароль изменён'); document.getElementById('passwordModal').style.display='none'; }
@@ -849,8 +763,6 @@
     setTimeout(()=>{ const s=document.getElementById('splashScreen'); s.style.opacity='0'; setTimeout(()=>{ s.style.display='none'; document.getElementById('authScreen').classList.add('visible'); },600); },2500);
     document.getElementById('authSwitch').onclick=()=>{ isLoginMode=!isLoginMode; const btn=document.getElementById('authSubmitBtn'), nameField=document.getElementById('authName'), sw=document.getElementById('authSwitch'); if(isLoginMode){ btn.textContent='Войти'; sw.innerHTML='Нет аккаунта? <span>Создать</span>'; nameField.style.display='none'; }else{ btn.textContent='Создать аккаунт'; sw.innerHTML='Уже есть аккаунт? <span>Войти</span>'; nameField.style.display='block'; } };
     document.getElementById('authSubmitBtn').onclick=()=>{ const u=document.getElementById('authUsername').value.trim(), p=document.getElementById('authPassword').value, n=document.getElementById('authName').value.trim(); if(!u||!p) return showError('Заполните поля'); if(!u.startsWith('@')) return showError('Username должен начинаться с @'); if(!isLoginMode && !n) return showError('Введите имя'); connectAndAuth(isLoginMode?'login':'register',u,p,n); };
-    document.getElementById('chatsTabBtn').onclick=()=>{ document.getElementById('chatsTabBtn').classList.add('active'); document.getElementById('groupsTabBtn').classList.remove('active'); document.getElementById('chatsList').style.display='block'; document.getElementById('groupsList').style.display='none'; renderChats(); };
-    document.getElementById('groupsTabBtn').onclick=()=>{ document.getElementById('groupsTabBtn').classList.add('active'); document.getElementById('chatsTabBtn').classList.remove('active'); document.getElementById('chatsList').style.display='none'; document.getElementById('groupsList').style.display='block'; renderGroups(); };
     document.getElementById('sendBtn').onclick=sendMessage;
     document.getElementById('messageInput').onkeypress=e=>{ if(e.key==='Enter') sendMessage(); };
     document.getElementById('chatAttachBtn').onclick=attachPhoto;
@@ -872,12 +784,16 @@
     document.getElementById('avatarInput').onchange=e=>{ const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=ev=>{ const u=ev.target.result; document.getElementById('avatarPreview').style.backgroundImage=`url(${u})`; if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', avatar:u })); const s=loadUserData(); if(s) saveUserData(s.username,s.password,s.name,u); updateUI(s?.name||currentUser,currentUser,u); }; r.readAsDataURL(f); } };
     
     // Мобильное меню
-    const mobileBtn=document.getElementById('mobileMenuBtn'), sidebar=document.getElementById('sidebar'), rightPanel=document.getElementById('rightPanel');
-    let sidebarOpen=false, rightOpen=false;
+    const mobileBtn=document.getElementById('mobileMenuBtn'), sidebar=document.getElementById('sidebar');
+    let sidebarOpen=false;
     if(window.innerWidth<=768) mobileBtn.style.display='flex';
-    window.addEventListener('resize',()=>{ if(window.innerWidth<=768) mobileBtn.style.display='flex'; else{ mobileBtn.style.display='none'; sidebar.classList.remove('open'); rightPanel.classList.remove('open'); } });
-    mobileBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!sidebarOpen && !rightOpen){ sidebar.classList.add('open'); sidebarOpen=true; }else if(sidebarOpen){ sidebar.classList.remove('open'); sidebarOpen=false; rightPanel.classList.add('open'); rightOpen=true; }else if(rightOpen){ rightPanel.classList.remove('open'); rightOpen=false; } });
-    document.addEventListener('click',e=>{ if(window.innerWidth<=768 && (sidebarOpen || rightOpen) && !sidebar.contains(e.target) && !rightPanel.contains(e.target) && e.target!==mobileBtn){ sidebar.classList.remove('open'); rightPanel.classList.remove('open'); sidebarOpen=false; rightOpen=false; } });
+    window.addEventListener('resize',()=>{ if(window.innerWidth<=768) mobileBtn.style.display='flex'; else{ mobileBtn.style.display='none'; sidebar.classList.remove('open'); } });
+    mobileBtn.addEventListener('click',e=>{ e.stopPropagation(); sidebar.classList.toggle('open'); sidebarOpen=sidebar.classList.contains('open'); });
+    document.addEventListener('click',e=>{ if(window.innerWidth<=768 && sidebarOpen && !sidebar.contains(e.target) && e.target!==mobileBtn){ sidebar.classList.remove('open'); sidebarOpen=false; } });
+    document.getElementById('chatBackBtn').onclick = () => {
+        document.getElementById('chatPanel').style.display = 'none';
+        currentChat = null;
+    };
     
     if(Notification.permission==='default') Notification.requestPermission();
     loadTheme();
