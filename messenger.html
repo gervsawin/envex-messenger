@@ -25,7 +25,7 @@
             --sent: #3b82f6;
             --received: #1e1e28;
             --online: #22c55e;
-            --hover: #1a11a24;
+            --hover: #1a1a24;
             --shadow: 0 8px 24px rgba(0,0,0,0.3);
             --transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
@@ -60,11 +60,6 @@
         @keyframes slideIn {
             from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         /* Splash */
@@ -124,7 +119,7 @@
             background: var(--bg-card);
             border-radius: 28px;
             padding: 48px 40px;
-            width: 400px;
+            width: 420px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             animation: fadeIn 0.4s ease;
@@ -156,6 +151,24 @@
 
         .auth-input:focus {
             border-color: var(--accent);
+        }
+
+        .policy-btn {
+            width: 100%;
+            padding: 8px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .policy-btn:hover {
+            color: var(--accent);
+            text-decoration: underline;
         }
 
         .auth-btn {
@@ -822,14 +835,50 @@
             border-radius: 24px;
             padding: 28px;
             width: 100%;
-            max-width: 360px;
-            animation: fadeIn 0.2s ease;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-header {
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--accent); }
+
+        .policy-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .policy-text h3 {
+            color: var(--text);
+            margin: 16px 0 8px;
+            font-size: 16px;
+        }
+
+        .policy-text p {
+            margin-bottom: 12px;
+        }
+
+        .policy-text ul {
+            margin: 8px 0 12px 20px;
+        }
+
+        .policy-text li {
+            margin-bottom: 4px;
         }
 
         .avatar-preview {
@@ -864,6 +913,7 @@
             .feed-posts { padding: 16px; }
             .feed-input { padding: 12px 20px 20px; }
             .message { max-width: 85%; }
+            .auth-card { padding: 32px 24px; width: 90%; }
         }
     </style>
 </head>
@@ -879,9 +929,10 @@
 <div class="auth" id="authScreen">
     <div class="auth-card">
         <div class="auth-logo">envex</div>
-        <input type="text" id="authUsername" class="auth-input" placeholder="username" autocomplete="off">
+        <input type="text" id="authUsername" class="auth-input" placeholder="@username" autocomplete="off">
         <input type="password" id="authPassword" class="auth-input" placeholder="пароль">
         <input type="text" id="authName" class="auth-input" placeholder="ваше имя" style="display: none;">
+        <button type="button" id="policyBtn" class="policy-btn">Политика и конфиденциальность</button>
         <button id="authSubmitBtn" class="auth-btn">Войти</button>
         <div class="auth-switch" id="authSwitch">Нет аккаунта? <span>Создать</span></div>
         <div class="error-msg" id="errorMsg"></div>
@@ -969,7 +1020,78 @@
 
 <button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; background:var(--accent); border:none; border-radius:50%; color:white; font-size:24px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
 
-<!-- Модалки -->
+<!-- Модалка политики -->
+<div id="policyModal" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="modal-header" style="margin-bottom: 0;">Политика использования</div>
+            <button class="modal-close" id="closePolicyBtn">&times;</button>
+        </div>
+        <div class="policy-text">
+            <p><strong>Дата вступления в силу: 1.05.2026</strong></p>
+            <p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p>
+
+            <h3>1. Общие положения</h3>
+            <p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения. Пользователь обязуется использовать сервис только в законных целях и соблюдать применимое законодательство.</p>
+
+            <h3>2. Регистрация и аккаунт</h3>
+            <ul>
+                <li>Пользователь обязан предоставлять достоверную информацию.</li>
+                <li>Вы несете ответственность за безопасность своего аккаунта.</li>
+                <li>Запрещено передавать доступ третьим лицам.</li>
+            </ul>
+
+            <h3>3. Допустимое использование</h3>
+            <p>Пользователям запрещается:</p>
+            <ul>
+                <li>Нарушать законы и права третьих лиц</li>
+                <li>Распространять спам, мошеннический контент или вредоносное ПО</li>
+                <li>Публиковать угрозы, оскорбления, призывы к насилию</li>
+                <li>Загружать незаконный контент (включая пиратские материалы)</li>
+                <li>Использовать Envex для преследования или травли других пользователей</li>
+            </ul>
+
+            <h3>4. Контент пользователей</h3>
+            <ul>
+                <li>Пользователь несет полную ответственность за отправляемый контент</li>
+                <li>Envex не контролирует каждое сообщение, но оставляет за собой право удалять контент, нарушающий правила</li>
+                <li>Пользователь предоставляет Envex право обрабатывать контент исключительно для работы сервиса</li>
+            </ul>
+
+            <h3>5. Конфиденциальность</h3>
+            <ul>
+                <li>Мы уважаем вашу приватность и обрабатываем данные в соответствии с Политикой конфиденциальности</li>
+                <li>Сообщения могут быть защищены сквозным шифрованием (если применимо)</li>
+                <li>Мы не продаем личные данные третьим лицам</li>
+            </ul>
+
+            <h3>6. Ограничение ответственности</h3>
+            <ul>
+                <li>Envex предоставляется «как есть»</li>
+                <li>Мы не гарантируем бесперебойную работу сервиса</li>
+                <li>Envex не несет ответственности за действия пользователей</li>
+            </ul>
+
+            <h3>7. Блокировка и удаление аккаунта</h3>
+            <p>Мы можем:</p>
+            <ul>
+                <li>Ограничить доступ или удалить аккаунт при нарушении правил</li>
+                <li>Удалять контент без предварительного уведомления</li>
+            </ul>
+
+            <h3>8. Интеллектуальная собственность</h3>
+            <ul>
+                <li>Все права на платформу Envex принадлежат разработчику</li>
+                <li>Пользователи не имеют права копировать, модифицировать или распространять сервис без разрешения</li>
+            </ul>
+
+            <h3>9. Изменения политики</h3>
+            <p>Мы можем обновлять данную политику. Продолжение использования сервиса означает согласие с изменениями.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Остальные модалки -->
 <div id="editNameModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить имя</div><input type="text" id="newNameInput" class="auth-input"><button id="saveNameBtn" class="auth-btn">Сохранить</button><button id="closeNameModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="passwordModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить пароль</div><input type="password" id="oldPassword" class="auth-input" placeholder="Старый пароль"><input type="password" id="newPassword" class="auth-input" placeholder="Новый пароль"><input type="password" id="confirmPassword" class="auth-input" placeholder="Подтвердите"><button id="savePasswordBtn" class="auth-btn">Сохранить</button><button id="closePasswordModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="avatarModal" class="modal"><div class="modal-content"><div class="modal-header">Фото профиля</div><div class="avatar-preview" id="avatarPreview"></div><input type="file" id="avatarInput" accept="image/*" style="display:none;"><button id="uploadAvatarBtn" class="auth-btn">Загрузить</button><button id="closeAvatarModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
@@ -1082,6 +1204,19 @@
     
     function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
     function viewImage(u){ const w=window.open(); w.document.write(`<img src="${u}" style="max-width:100%; background:black;">`); }
+    
+    // Политика
+    document.getElementById('policyBtn').onclick = () => {
+        document.getElementById('policyModal').style.display = 'flex';
+    };
+    document.getElementById('closePolicyBtn').onclick = () => {
+        document.getElementById('policyModal').style.display = 'none';
+    };
+    document.getElementById('policyModal').onclick = (e) => {
+        if(e.target === document.getElementById('policyModal')) {
+            document.getElementById('policyModal').style.display = 'none';
+        }
+    };
     
     // Настройки
     function openEditNameModal(){ document.getElementById('newNameInput').value=document.getElementById('profileName').textContent; document.getElementById('editNameModal').style.display='flex'; }
