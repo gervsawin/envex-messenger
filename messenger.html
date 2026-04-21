@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>envex</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>envex — современный мессенджер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,43 +15,53 @@
 
         :root {
             --bg: #0a0a0f;
-            --bg-side: #0f0f14;
-            --bg-card: #16161c;
-            --border: #20202a;
-            --text: #fff;
+            --bg-side: rgba(15, 15, 20, 0.8);
+            --bg-card: rgba(22, 22, 28, 0.9);
+            --border: rgba(32, 32, 42, 0.5);
+            --text: #ffffff;
             --text-secondary: #8a8a99;
+            --text-tertiary: #5a5a6e;
             --accent: #3b82f6;
-            --accent-dark: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --accent-hover: #2563eb;
             --sent: #3b82f6;
             --received: #1e1e28;
             --online: #22c55e;
-            --hover: #1a1a24;
-            --shadow: 0 8px 24px rgba(0,0,0,0.3);
-            --transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --hover: rgba(255,255,255,0.05);
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --blur: blur(12px);
         }
 
         body.light {
-            --bg: #f5f5f8;
-            --bg-side: #fff;
-            --bg-card: #eef2f5;
-            --border: #e2e5e9;
+            --bg: #f0f2f5;
+            --bg-side: rgba(255,255,255,0.8);
+            --bg-card: rgba(255,255,255,0.9);
+            --border: rgba(0,0,0,0.08);
             --text: #1a1a2e;
             --text-secondary: #6a6a7e;
+            --text-tertiary: #9a9aae;
+            --accent: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --sent: #3b82f6;
             --received: #eef2f5;
-            --hover: #e8ecf0;
-            --shadow: 0 8px 24px rgba(0,0,0,0.08);
+            --hover: rgba(0,0,0,0.03);
+            --shadow: 0 8px 32px rgba(0,0,0,0.08);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --blur: blur(12px);
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
             font-size: 14px;
+            font-weight: 400;
         }
 
-        /* Анимации */
+        /* ============ АНИМАЦИИ ============ */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -62,7 +72,17 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Splash */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 0 0 var(--accent); }
+            100% { box-shadow: 0 0 0 8px transparent; }
+        }
+
+        /* ============ SPLASH ============ */
         .splash {
             position: fixed;
             inset: 0;
@@ -80,23 +100,23 @@
         }
 
         .splash-logo {
-            font-size: 56px;
-            font-weight: 700;
+            font-size: 64px;
+            font-weight: 800;
             letter-spacing: -2px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .splash-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             color: var(--text-secondary);
         }
 
-        /* Auth */
+        /* ============ AUTH ============ */
         .auth {
             position: fixed;
             inset: 0;
@@ -117,20 +137,22 @@
 
         .auth-card {
             background: var(--bg-card);
-            border-radius: 28px;
+            backdrop-filter: var(--blur);
+            border-radius: 32px;
             padding: 48px 40px;
-            width: 420px;
+            width: 440px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             animation: fadeIn 0.4s ease;
         }
 
         .auth-logo {
-            font-size: 42px;
-            font-weight: 700;
+            font-size: 48px;
+            font-weight: 800;
             text-align: center;
             margin-bottom: 40px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            letter-spacing: -1px;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -138,19 +160,20 @@
 
         .auth-input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 14px 18px;
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             color: var(--text);
-            font-size: 14px;
+            font-size: 15px;
             margin-bottom: 12px;
             outline: none;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .auth-input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         .policy-btn {
@@ -159,33 +182,32 @@
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             margin-bottom: 12px;
-            transition: var(--transition);
-            text-align: center;
+            transition: color 0.2s;
         }
 
         .policy-btn:hover {
             color: var(--accent);
-            text-decoration: underline;
         }
 
         .auth-btn {
             width: 100%;
-            padding: 12px;
-            background: var(--accent);
+            padding: 14px;
+            background: var(--accent-gradient);
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .auth-btn:hover {
-            background: var(--accent-dark);
             transform: translateY(-1px);
+            opacity: 0.9;
         }
 
         .auth-switch {
@@ -207,7 +229,7 @@
             text-align: center;
         }
 
-        /* App */
+        /* ============ APP ============ */
         .app {
             display: none;
             width: 100%;
@@ -219,10 +241,11 @@
             height: 100%;
         }
 
-        /* Sidebar */
+        /* ============ SIDEBAR ============ */
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: var(--bg-side);
+            backdrop-filter: var(--blur);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -231,57 +254,57 @@
         }
 
         .sidebar-header {
-            padding: 20px;
+            padding: 24px 20px;
             border-bottom: 1px solid var(--border);
         }
 
-        .user-info {
+        .user-card {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 20px;
         }
 
         .avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
             border-radius: 50%;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
-            font-size: 18px;
+            font-weight: 600;
+            font-size: 20px;
             cursor: pointer;
             transition: transform 0.2s;
         }
 
         .avatar:hover { transform: scale(1.02); }
 
-        .user-name {
+        .user-details h3 {
+            font-size: 16px;
             font-weight: 600;
-            font-size: 15px;
+            margin-bottom: 2px;
         }
 
-        .user-status {
+        .user-details p {
             font-size: 12px;
             color: var(--online);
-            margin-top: 2px;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
-            font-size: 13px;
+            font-size: 14px;
             outline: none;
             margin-bottom: 16px;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .search-input:focus {
@@ -295,38 +318,39 @@
 
         .tab-btn {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             color: var(--text-secondary);
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .tab-btn.active {
-            background: var(--accent);
+            background: var(--accent-gradient);
             color: white;
-            border-color: var(--accent);
+            border-color: transparent;
         }
 
-        .chats-list {
+        .chats-scroll {
             flex: 1;
             overflow-y: auto;
+            padding: 8px;
         }
 
         .chat-item {
-            padding: 12px 16px;
-            margin: 4px 12px;
+            padding: 12px;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            border-radius: 14px;
-            transition: var(--transition);
+            border-radius: 16px;
+            transition: all 0.2s;
             animation: slideIn 0.2s ease;
         }
 
@@ -336,14 +360,14 @@
         }
 
         .chat-avatar {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: var(--bg-card);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             background-size: cover;
             background-position: center;
@@ -354,17 +378,17 @@
         }
 
         .chat-name {
-            font-weight: 500;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 15px;
             margin-bottom: 2px;
         }
 
         .chat-status {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        /* Right Panel */
+        /* ============ RIGHT PANEL ============ */
         .right-panel {
             flex: 1;
             display: flex;
@@ -372,10 +396,12 @@
             background: var(--bg);
         }
 
+        /* Top Navigation */
         .top-nav {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             background: var(--bg-side);
+            backdrop-filter: var(--blur);
             border-bottom: 1px solid var(--border);
             padding: 0 24px;
         }
@@ -387,7 +413,7 @@
             color: var(--text-secondary);
             cursor: pointer;
             border-bottom: 2px solid transparent;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .nav-link:hover { color: var(--accent); }
@@ -396,7 +422,7 @@
             border-bottom-color: var(--accent);
         }
 
-        /* Profile */
+        /* ============ PROFILE ============ */
         .profile-view {
             display: none;
             flex-direction: column;
@@ -411,12 +437,17 @@
         .profile-header {
             padding: 40px;
             text-align: center;
+            background: var(--bg-card);
+            backdrop-filter: var(--blur);
+            margin: 20px;
+            border-radius: 32px;
+            border: 1px solid var(--border);
         }
 
         .profile-avatar {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: var(--accent-gradient);
             border-radius: 50%;
             margin: 0 auto 20px;
             background-size: cover;
@@ -434,7 +465,7 @@
 
         .profile-name {
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 6px;
         }
 
@@ -448,44 +479,44 @@
             display: flex;
             justify-content: center;
             gap: 48px;
-            margin-bottom: 32px;
         }
 
         .stat-value {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .stat-label {
             font-size: 11px;
-            color: var(--text-secondary);
+            color: var(--text-tertiary);
             margin-top: 4px;
         }
 
         .settings-section {
-            padding: 0 32px 32px;
+            padding: 0 20px 20px;
         }
 
         .settings-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
+            color: var(--text-tertiary);
+            margin: 20px 0 12px 0;
         }
 
         .setting-row {
             background: var(--bg-card);
+            backdrop-filter: var(--blur);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
+            border-radius: 16px;
+            padding: 14px 16px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .setting-row:hover {
@@ -504,18 +535,20 @@
             padding: 10px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
+            font-size: 13px;
         }
 
         .theme-option.active {
-            background: var(--accent);
+            background: var(--accent-gradient);
             color: white;
+            border-color: transparent;
         }
 
-        /* Feed */
+        /* ============ FEED ============ */
         .feed-view {
             display: none;
             flex-direction: column;
@@ -528,19 +561,22 @@
 
         .feed-header {
             padding: 24px 32px;
-            border-bottom: 1px solid var(--border);
         }
 
         .feed-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .feed-posts {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 32px;
+            padding: 0 24px 20px;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -548,10 +584,11 @@
 
         .post-card {
             background: var(--bg-card);
+            backdrop-filter: var(--blur);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 20px;
-            transition: var(--transition);
+            transition: all 0.2s;
             animation: fadeIn 0.3s ease;
         }
 
@@ -568,28 +605,28 @@
         }
 
         .post-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            width: 44px;
+            height: 44px;
+            background: var(--accent-gradient);
             border-radius: 50%;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
         }
 
         .post-author h4 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 2px;
         }
 
         .post-author span {
             font-size: 11px;
-            color: var(--text-secondary);
+            color: var(--text-tertiary);
         }
 
         .post-content {
@@ -600,7 +637,7 @@
 
         .post-content img {
             max-width: 100%;
-            border-radius: 12px;
+            border-radius: 16px;
             margin-top: 10px;
             cursor: pointer;
         }
@@ -613,26 +650,30 @@
         }
 
         .post-action {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
             cursor: pointer;
             transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .post-action:hover { color: var(--accent); }
 
         .feed-input {
-            padding: 16px 32px 24px;
+            padding: 16px 24px 24px;
             background: var(--bg-side);
+            backdrop-filter: var(--blur);
             border-top: 1px solid var(--border);
         }
 
         .feed-input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 40px;
+            border-radius: 60px;
             padding: 6px 12px;
         }
 
@@ -643,17 +684,17 @@
             color: var(--text);
             outline: none;
             font-size: 14px;
-            padding: 10px 8px;
+            padding: 12px 8px;
         }
 
         .feed-attach, .feed-send {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            transition: var(--transition);
+            font-size: 18px;
+            transition: all 0.2s;
         }
 
         .feed-attach {
@@ -663,17 +704,17 @@
         }
 
         .feed-send {
-            background: var(--accent);
+            background: var(--accent-gradient);
             color: white;
         }
 
         .feed-attach:hover, .feed-send:hover { transform: scale(0.96); }
 
-        /* Chat Panel */
+        /* ============ CHAT PANEL ============ */
         .chat-panel {
             position: fixed;
             top: 0;
-            left: 300px;
+            left: 320px;
             right: 0;
             bottom: 0;
             background: var(--bg);
@@ -686,8 +727,9 @@
         .chat-panel.active { display: flex; }
 
         .chat-header {
-            padding: 16px 20px;
+            padding: 16px 24px;
             background: var(--bg-side);
+            backdrop-filter: var(--blur);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -705,10 +747,15 @@
             justify-content: center;
             cursor: pointer;
             font-size: 20px;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .chat-back:hover { background: var(--hover); }
+
+        .chat-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
 
         .chat-messages {
             flex: 1;
@@ -730,24 +777,25 @@
 
         .bubble {
             padding: 10px 16px;
-            border-radius: 20px;
+            border-radius: 22px;
+            position: relative;
         }
 
         .sent .bubble {
             background: var(--sent);
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 6px;
         }
 
         .received .bubble {
             background: var(--received);
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 6px;
         }
 
-        .message-text { font-size: 14px; }
+        .message-text { font-size: 14px; line-height: 1.4; }
         .message-text img {
             max-width: 200px;
-            border-radius: 12px;
+            border-radius: 14px;
             margin-top: 6px;
             cursor: pointer;
         }
@@ -764,15 +812,16 @@
         .chat-input-area {
             padding: 16px 20px;
             background: var(--bg-side);
+            backdrop-filter: var(--blur);
             border-top: 1px solid var(--border);
         }
 
         .chat-input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 40px;
+            border-radius: 60px;
             padding: 6px 12px;
         }
 
@@ -783,17 +832,17 @@
             color: var(--text);
             outline: none;
             font-size: 14px;
-            padding: 10px 8px;
+            padding: 12px 8px;
         }
 
         .chat-attach, .chat-send {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            transition: var(--transition);
+            font-size: 18px;
+            transition: all 0.2s;
         }
 
         .chat-attach {
@@ -803,7 +852,7 @@
         }
 
         .chat-send {
-            background: var(--accent);
+            background: var(--accent-gradient);
             color: white;
         }
 
@@ -811,16 +860,16 @@
 
         .empty-state {
             text-align: center;
-            color: var(--text-secondary);
-            padding: 48px 20px;
+            color: var(--text-tertiary);
+            padding: 60px 20px;
         }
 
-        /* Modal */
+        /* ============ MODAL ============ */
         .modal {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             display: none;
             align-items: center;
@@ -831,17 +880,19 @@
 
         .modal-content {
             background: var(--bg-card);
+            backdrop-filter: var(--blur);
             border: 1px solid var(--border);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 28px;
             width: 100%;
             max-width: 500px;
             max-height: 80vh;
             overflow-y: auto;
+            animation: fadeIn 0.2s ease;
         }
 
         .modal-header {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
         }
@@ -869,18 +920,6 @@
             font-size: 16px;
         }
 
-        .policy-text p {
-            margin-bottom: 12px;
-        }
-
-        .policy-text ul {
-            margin: 8px 0 12px 20px;
-        }
-
-        .policy-text li {
-            margin-bottom: 4px;
-        }
-
         .avatar-preview {
             width: 80px;
             height: 80px;
@@ -891,14 +930,15 @@
             background-position: center;
         }
 
-        /* Mobile */
+        /* ============ MOBILE ============ */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
                 left: 0;
                 top: 0;
                 bottom: 0;
-                width: 280px;
+                width: 85%;
+                max-width: 300px;
                 z-index: 300;
                 transform: translateX(-100%);
             }
@@ -907,18 +947,31 @@
             .chat-back { display: flex; }
             .top-nav { padding: 0 16px; }
             .nav-link { padding: 14px 20px; }
-            .profile-header { padding: 24px; }
-            .settings-section { padding: 0 20px 24px; }
+            .profile-header { margin: 16px; padding: 24px; }
+            .settings-section { padding: 0 16px 20px; }
             .feed-header { padding: 20px; }
-            .feed-posts { padding: 16px; }
+            .feed-posts { padding: 0 16px 20px; }
             .feed-input { padding: 12px 20px 20px; }
             .message { max-width: 85%; }
             .auth-card { padding: 32px 24px; width: 90%; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
+<!-- Splash -->
 <div class="splash" id="splashScreen">
     <div class="splash-content">
         <div class="splash-logo">envex</div>
@@ -926,6 +979,7 @@
     </div>
 </div>
 
+<!-- Auth -->
 <div class="auth" id="authScreen">
     <div class="auth-card">
         <div class="auth-logo">envex</div>
@@ -939,15 +993,17 @@
     </div>
 </div>
 
+<!-- App -->
 <div class="app" id="appScreen">
     <div class="main-layout">
+        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="user-info">
+                <div class="user-card">
                     <div class="avatar" id="sidebarAvatar" onclick="openAvatarModal()">?</div>
-                    <div>
-                        <div class="user-name" id="sidebarUserName"></div>
-                        <div class="user-status">онлайн</div>
+                    <div class="user-details">
+                        <h3 id="sidebarUserName"></h3>
+                        <p>онлайн</p>
                     </div>
                 </div>
                 <input type="text" id="searchInput" class="search-input" placeholder="Поиск">
@@ -956,16 +1012,18 @@
                     <div class="tab-btn" id="groupsTabBtn">Группы</div>
                 </div>
             </div>
-            <div class="chats-list" id="chatsList"></div>
-            <div class="chats-list" id="groupsList" style="display: none;"></div>
+            <div class="chats-scroll" id="chatsList"></div>
+            <div class="chats-scroll" id="groupsList" style="display: none;"></div>
         </div>
 
+        <!-- Right Panel -->
         <div class="right-panel">
             <div class="top-nav">
                 <div class="nav-link active" data-view="profile">Профиль</div>
                 <div class="nav-link" data-view="feed">Лента</div>
             </div>
 
+            <!-- Profile -->
             <div class="profile-view active" id="profileView">
                 <div class="profile-header">
                     <div class="profile-avatar" id="profileAvatar" onclick="openAvatarModal()">?</div>
@@ -988,6 +1046,7 @@
                 </div>
             </div>
 
+            <!-- Feed -->
             <div class="feed-view" id="feedView">
                 <div class="feed-header"><h1>Лента</h1></div>
                 <div class="feed-posts" id="feedPosts"><div class="empty-state">Нет сообщений</div></div>
@@ -1001,6 +1060,7 @@
             </div>
         </div>
 
+        <!-- Chat Panel -->
         <div class="chat-panel" id="chatPanel">
             <div class="chat-header">
                 <div class="chat-back" id="chatBackBtn">←</div>
@@ -1018,9 +1078,9 @@
     </div>
 </div>
 
-<button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; background:var(--accent); border:none; border-radius:50%; color:white; font-size:24px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
+<button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:52px; height:52px; background:var(--accent-gradient); border:none; border-radius:50%; color:white; font-size:24px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
 
-<!-- Модалка политики -->
+<!-- Policy Modal -->
 <div id="policyModal" class="modal">
     <div class="modal-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -1030,68 +1090,21 @@
         <div class="policy-text">
             <p><strong>Дата вступления в силу: 1.05.2026</strong></p>
             <p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p>
-
             <h3>1. Общие положения</h3>
-            <p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения. Пользователь обязуется использовать сервис только в законных целях и соблюдать применимое законодательство.</p>
-
+            <p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения.</p>
             <h3>2. Регистрация и аккаунт</h3>
-            <ul>
-                <li>Пользователь обязан предоставлять достоверную информацию.</li>
-                <li>Вы несете ответственность за безопасность своего аккаунта.</li>
-                <li>Запрещено передавать доступ третьим лицам.</li>
-            </ul>
-
+            <ul><li>Пользователь обязан предоставлять достоверную информацию.</li><li>Вы несете ответственность за безопасность своего аккаунта.</li></ul>
             <h3>3. Допустимое использование</h3>
-            <p>Пользователям запрещается:</p>
-            <ul>
-                <li>Нарушать законы и права третьих лиц</li>
-                <li>Распространять спам, мошеннический контент или вредоносное ПО</li>
-                <li>Публиковать угрозы, оскорбления, призывы к насилию</li>
-                <li>Загружать незаконный контент (включая пиратские материалы)</li>
-                <li>Использовать Envex для преследования или травли других пользователей</li>
-            </ul>
-
-            <h3>4. Контент пользователей</h3>
-            <ul>
-                <li>Пользователь несет полную ответственность за отправляемый контент</li>
-                <li>Envex не контролирует каждое сообщение, но оставляет за собой право удалять контент, нарушающий правила</li>
-                <li>Пользователь предоставляет Envex право обрабатывать контент исключительно для работы сервиса</li>
-            </ul>
-
-            <h3>5. Конфиденциальность</h3>
-            <ul>
-                <li>Мы уважаем вашу приватность и обрабатываем данные в соответствии с Политикой конфиденциальности</li>
-                <li>Сообщения могут быть защищены сквозным шифрованием (если применимо)</li>
-                <li>Мы не продаем личные данные третьим лицам</li>
-            </ul>
-
-            <h3>6. Ограничение ответственности</h3>
-            <ul>
-                <li>Envex предоставляется «как есть»</li>
-                <li>Мы не гарантируем бесперебойную работу сервиса</li>
-                <li>Envex не несет ответственности за действия пользователей</li>
-            </ul>
-
-            <h3>7. Блокировка и удаление аккаунта</h3>
-            <p>Мы можем:</p>
-            <ul>
-                <li>Ограничить доступ или удалить аккаунт при нарушении правил</li>
-                <li>Удалять контент без предварительного уведомления</li>
-            </ul>
-
-            <h3>8. Интеллектуальная собственность</h3>
-            <ul>
-                <li>Все права на платформу Envex принадлежат разработчику</li>
-                <li>Пользователи не имеют права копировать, модифицировать или распространять сервис без разрешения</li>
-            </ul>
-
-            <h3>9. Изменения политики</h3>
-            <p>Мы можем обновлять данную политику. Продолжение использования сервиса означает согласие с изменениями.</p>
+            <ul><li>Запрещено распространять спам, угрозы, оскорбления</li><li>Запрещено использовать Envex для преследования</li></ul>
+            <h3>4. Конфиденциальность</h3>
+            <ul><li>Мы не продаем личные данные третьим лицам</li></ul>
+            <h3>5. Изменения политики</h3>
+            <p>Мы можем обновлять данную политику. Продолжение использования означает согласие с изменениями.</p>
         </div>
     </div>
 </div>
 
-<!-- Остальные модалки -->
+<!-- Other Modals -->
 <div id="editNameModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить имя</div><input type="text" id="newNameInput" class="auth-input"><button id="saveNameBtn" class="auth-btn">Сохранить</button><button id="closeNameModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="passwordModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить пароль</div><input type="password" id="oldPassword" class="auth-input" placeholder="Старый пароль"><input type="password" id="newPassword" class="auth-input" placeholder="Новый пароль"><input type="password" id="confirmPassword" class="auth-input" placeholder="Подтвердите"><button id="savePasswordBtn" class="auth-btn">Сохранить</button><button id="closePasswordModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="avatarModal" class="modal"><div class="modal-content"><div class="modal-header">Фото профиля</div><div class="avatar-preview" id="avatarPreview"></div><input type="file" id="avatarInput" accept="image/*" style="display:none;"><button id="uploadAvatarBtn" class="auth-btn">Загрузить</button><button id="closeAvatarModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
@@ -1101,15 +1114,12 @@
     let ws = null, currentUser = null, currentChat = null, allUsers = [], allGroups = [], allMessages = {}, allPosts = [], isLoginMode = true, isConnecting = false, reconnectTimer = null;
     const SESSION_KEY = 'envex_user_data';
 
-    // Сессия
     function saveUserData(u,p,n,a){ localStorage.setItem(SESSION_KEY, JSON.stringify({ username:u, password:p, name:n, avatar:a, savedAt:Date.now() })); }
     function loadUserData(){ try{ const d=JSON.parse(localStorage.getItem(SESSION_KEY)); if(d && Date.now()-d.savedAt<30*24*60*60*1000) return d; localStorage.removeItem(SESSION_KEY); return null; }catch(e){ return null; } }
     function clearUserData(){ localStorage.removeItem(SESSION_KEY); if(reconnectTimer) clearTimeout(reconnectTimer); }
     function showError(m){ const e=document.getElementById('errorMsg'); if(e){ e.textContent=m; setTimeout(()=>e.textContent='',3000); } }
-
     function getWsUrl(){ return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host; }
 
-    // Подключение
     function connectAndAuth(t,u,p,n){
         if(isConnecting) return;
         isConnecting=true;
@@ -1205,24 +1215,16 @@
     function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
     function viewImage(u){ const w=window.open(); w.document.write(`<img src="${u}" style="max-width:100%; background:black;">`); }
     
-    // Политика
-    document.getElementById('policyBtn').onclick = () => {
-        document.getElementById('policyModal').style.display = 'flex';
-    };
-    document.getElementById('closePolicyBtn').onclick = () => {
-        document.getElementById('policyModal').style.display = 'none';
-    };
-    document.getElementById('policyModal').onclick = (e) => {
-        if(e.target === document.getElementById('policyModal')) {
-            document.getElementById('policyModal').style.display = 'none';
-        }
-    };
+    // Policy modal
+    document.getElementById('policyBtn').onclick = () => document.getElementById('policyModal').style.display = 'flex';
+    document.getElementById('closePolicyBtn').onclick = () => document.getElementById('policyModal').style.display = 'none';
+    document.getElementById('policyModal').onclick = (e) => { if(e.target === document.getElementById('policyModal')) document.getElementById('policyModal').style.display = 'none'; };
     
-    // Настройки
+    // Settings
     function openEditNameModal(){ document.getElementById('newNameInput').value=document.getElementById('profileName').textContent; document.getElementById('editNameModal').style.display='flex'; }
     function saveName(){ const n=document.getElementById('newNameInput').value.trim(); if(!n) return showError('Введите имя'); if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', name:n })); document.getElementById('editNameModal').style.display='none'; }
     function openPasswordModal(){ document.getElementById('passwordModal').style.display='flex'; }
-    function savePassword(){ const old=document.getElementById('oldPassword').value, pwd=document.getElementById('newPassword').value, conf=document.getElementById('confirmPassword').value; if(!old||!pwd) return showError('Заполните поля'); if(pwd!==conf) return showError('Пароли не совпадают'); const s=loadUserData(); if(s && s.password!==old) return showError('Неверный старый пароль'); if(s) saveUserData(s.username,pwd,s.name,s.avatar); showError('Пароль изменён'); document.getElementById('passwordModal').style.display='none'; document.getElementById('oldPassword').value=''; document.getElementById('newPassword').value=''; document.getElementById('confirmPassword').value=''; }
+    function savePassword(){ const old=document.getElementById('oldPassword').value, pwd=document.getElementById('newPassword').value, conf=document.getElementById('confirmPassword').value; if(!old||!pwd) return showError('Заполните поля'); if(pwd!==conf) return showError('Пароли не совпадают'); const s=loadUserData(); if(s && s.password!==old) return showError('Неверный старый пароль'); if(s) saveUserData(s.username,pwd,s.name,s.avatar); showError('Пароль изменён'); document.getElementById('passwordModal').style.display='none'; }
     function toggleTheme(t){ if(t==='light') document.body.classList.add('light'); else document.body.classList.remove('light'); localStorage.setItem('envex_theme',t); document.querySelectorAll('.theme-option').forEach(o=>o.classList.remove('active')); document.querySelector(`.theme-option[data-theme="${t}"]`).classList.add('active'); }
     function loadTheme(){ const t=localStorage.getItem('envex_theme')||'dark'; toggleTheme(t); }
     function clearCache(){ if(confirm('Очистить кэш и выйти?')){ localStorage.clear(); clearUserData(); if(ws) ws.close(); location.reload(); } }
@@ -1232,7 +1234,7 @@
     function openGroupModal(){ const l=document.getElementById('groupMembersList'); l.innerHTML=allUsers.filter(u=>u.username!==currentUser).map(u=>`<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);"><span>${u.name||u.username}</span><input type="checkbox" value="${u.username}" class="group-checkbox"></div>`).join(''); document.getElementById('groupModal').style.display='flex'; }
     function createGroup(){ const n=document.getElementById('groupName').value.trim(); if(!n) return alert('Введите название'); const m=Array.from(document.querySelectorAll('.group-checkbox:checked')).map(cb=>cb.value); if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'create_group', name:n, members:m })); document.getElementById('groupModal').style.display='none'; document.getElementById('groupName').value=''; }
     
-    // Инициализация
+    // Init
     setTimeout(()=>{ const s=document.getElementById('splashScreen'); s.style.opacity='0'; setTimeout(()=>{ s.style.display='none'; document.getElementById('authScreen').classList.add('visible'); },600); },2500);
     document.getElementById('authSwitch').onclick=()=>{ isLoginMode=!isLoginMode; const btn=document.getElementById('authSubmitBtn'), nameField=document.getElementById('authName'), sw=document.getElementById('authSwitch'); if(isLoginMode){ btn.textContent='Войти'; sw.innerHTML='Нет аккаунта? <span>Создать</span>'; nameField.style.display='none'; }else{ btn.textContent='Создать аккаунт'; sw.innerHTML='Уже есть аккаунт? <span>Войти</span>'; nameField.style.display='block'; } };
     document.getElementById('authSubmitBtn').onclick=()=>{ const u=document.getElementById('authUsername').value.trim(), p=document.getElementById('authPassword').value, n=document.getElementById('authName').value.trim(); if(!u||!p) return showError('Заполните поля'); if(!u.startsWith('@')) return showError('Username должен начинаться с @'); if(!isLoginMode && !n) return showError('Введите имя'); connectAndAuth(isLoginMode?'login':'register',u,p,n); };
