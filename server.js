@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'messenger.html'));
 });
 
-// ============ ХРАНИЛИЩА ============
+// Хранилища
 const users = new Map();
 const channels = new Map();
 const groups = new Map();
@@ -26,7 +26,7 @@ let posts = [];
 let nextId = 1;
 let nextPostId = 1;
 
-// ============ ЗАГРУЗКА ДАННЫХ ============
+// Загрузка данных
 try {
     const savedUsers = JSON.parse(fs.readFileSync('./users.json', 'utf8'));
     for (const [username, data] of Object.entries(savedUsers)) {
@@ -35,22 +35,8 @@ try {
 } catch(e) {}
 
 try {
-    const savedChannels = JSON.parse(fs.readFileSync('./channels.json', 'utf8'));
-    for (const [channelId, data] of Object.entries(savedChannels)) {
-        channels.set(channelId, data);
-    }
-} catch(e) {}
-
-try {
-    const savedGroups = JSON.parse(fs.readFileSync('./groups.json', 'utf8'));
-    for (const [groupId, data] of Object.entries(savedGroups)) {
-        groups.set(groupId, data);
-    }
-} catch(e) {}
-
-try {
-    const saved = JSON.parse(fs.readFileSync('./messages.json', 'utf8'));
-    messages = saved;
+    const savedMessages = JSON.parse(fs.readFileSync('./messages.json', 'utf8'));
+    messages = savedMessages;
     nextId = (messages[messages.length - 1]?.id || 0) + 1;
 } catch(e) {}
 
@@ -60,40 +46,22 @@ try {
     nextPostId = (posts[posts.length - 1]?.id || 0) + 1;
 } catch(e) {}
 
-// ============ СОХРАНЕНИЕ ============
 function saveUsers() {
     const toSave = {};
     for (const [username, data] of users.entries()) {
         toSave[username] = { password: data.password, name: data.name, avatar: data.avatar, lastSeen: data.lastSeen };
     }
-    fs.writeFileSync('./users.json', JSON.stringify(toSave, null, 2), 'utf8');
-}
-
-function saveChannels() {
-    const toSave = {};
-    for (const [channelId, data] of channels.entries()) {
-        toSave[channelId] = { name: data.name, description: data.description, owner: data.owner, subscribers: data.subscribers, avatar: data.avatar, createdAt: data.createdAt };
-    }
-    fs.writeFileSync('./channels.json', JSON.stringify(toSave, null, 2), 'utf8');
-}
-
-function saveGroups() {
-    const toSave = {};
-    for (const [groupId, data] of groups.entries()) {
-        toSave[groupId] = { name: data.name, members: data.members, owner: data.owner, avatar: data.avatar, createdAt: data.createdAt };
-    }
-    fs.writeFileSync('./groups.json', JSON.stringify(toSave, null, 2), 'utf8');
+    fs.writeFileSync('./users.json', JSON.stringify(toSave, null, 2));
 }
 
 function saveMessages() {
-    fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-2000), null, 2), 'utf8');
+    fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-2000), null, 2));
 }
 
 function savePosts() {
-    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2), 'utf8');
+    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2));
 }
 
-// ============ РАССЫЛКА ============
 function broadcastToAll(data, excludeSocket = null) {
     wss.clients.forEach(client => {
         if (client !== excludeSocket && client.readyState === WebSocket.OPEN) {
@@ -104,29 +72,9 @@ function broadcastToAll(data, excludeSocket = null) {
 
 function broadcastToUser(username, data) {
     const user = users.get(username);
-    if (user && user.ws && user.ws.readyState === WebSocket.OPEN) {
+    if (user?.ws?.readyState === WebSocket.OPEN) {
         user.ws.send(JSON.stringify(data));
     }
-}
-
-function broadcastToGroup(groupId, data, excludeUser = null) {
-    const group = groups.get(groupId);
-    if (!group) return;
-    group.members.forEach(member => {
-        if (member !== excludeUser) {
-            broadcastToUser(member, data);
-        }
-    });
-}
-
-function broadcastToChannel(channelId, data, excludeUser = null) {
-    const channel = channels.get(channelId);
-    if (!channel) return;
-    channel.subscribers.forEach(sub => {
-        if (sub !== excludeUser) {
-            broadcastToUser(sub, data);
-        }
-    });
 }
 
 function broadcastUserList() {
@@ -136,21 +84,6 @@ function broadcastUserList() {
     broadcastToAll({ type: 'users', users: list });
 }
 
-function broadcastChannelList() {
-    const list = Array.from(channels.entries()).map(([id, data]) => ({
-        id, name: data.name, description: data.description, owner: data.owner, subscribers: data.subscribers, avatar: data.avatar
-    }));
-    broadcastToAll({ type: 'channels', channels: list });
-}
-
-function broadcastGroupList() {
-    const list = Array.from(groups.entries()).map(([id, data]) => ({
-        id, name: data.name, members: data.members, owner: data.owner, avatar: data.avatar
-    }));
-    broadcastToAll({ type: 'groups', groups: list });
-}
-
-// ============ WEBSOCKET ОБРАБОТЧИК ============
 wss.on('connection', (ws) => {
     let currentUser = null;
     
@@ -158,7 +91,7 @@ wss.on('connection', (ws) => {
         try {
             const data = JSON.parse(raw);
             
-            // === РЕГИСТРАЦИЯ ===
+            // Регистрация
             if (data.type === 'register') {
                 const { username, password, name, avatar } = data;
                 if (!username.startsWith('@')) {
@@ -170,27 +103,22 @@ wss.on('connection', (ws) => {
                     return;
                 }
                 users.set(username, {
-                    password, name: name || username.substring(1), online: true, ws, lastSeen: Date.now(), avatar: avatar || null, typingTo: null
+                    password, name: name || username.substring(1), online: true, ws, lastSeen: Date.now(), avatar: avatar || null
                 });
                 currentUser = username;
                 ws.send(JSON.stringify({ type: 'registered', username, name: users.get(username).name, avatar }));
                 
                 const userMessages = messages.filter(m => 
-                    (!m.isChannel && !m.isGroup && (m.from === username || m.to === username)) ||
-                    (m.isChannel && channels.get(m.to)?.subscribers?.includes(username)) ||
-                    (m.isGroup && groups.get(m.to)?.members?.includes(username))
+                    (m.from === username || m.to === username)
                 );
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
                 ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
-                
                 broadcastUserList();
-                broadcastChannelList();
-                broadcastGroupList();
                 saveUsers();
                 return;
             }
             
-            // === ЛОГИН ===
+            // Логин
             if (data.type === 'login') {
                 const { username, password } = data;
                 const user = users.get(username);
@@ -209,21 +137,16 @@ wss.on('connection', (ws) => {
                 ws.send(JSON.stringify({ type: 'logged_in', username, name: user.name, avatar: user.avatar }));
                 
                 const userMessages = messages.filter(m => 
-                    (!m.isChannel && !m.isGroup && (m.from === username || m.to === username)) ||
-                    (m.isChannel && channels.get(m.to)?.subscribers?.includes(username)) ||
-                    (m.isGroup && groups.get(m.to)?.members?.includes(username))
+                    (m.from === username || m.to === username)
                 );
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
                 ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
-                
                 broadcastUserList();
-                broadcastChannelList();
-                broadcastGroupList();
                 saveUsers();
                 return;
             }
             
-            // === ОБНОВЛЕНИЕ ПРОФИЛЯ ===
+            // Обновление профиля
             if (data.type === 'update_profile') {
                 const { name, avatar } = data;
                 const user = users.get(currentUser);
@@ -237,7 +160,26 @@ wss.on('connection', (ws) => {
                 return;
             }
             
-            // === НОВЫЙ ПОСТ В ЛЕНТУ ===
+            // Личное сообщение
+            if (data.type === 'message') {
+                const { to, text, isImage } = data;
+                const msg = {
+                    id: nextId++, from: currentUser, to, text, isImage: isImage || false,
+                    time: Date.now(),
+                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                    status: 'sent', read: false, edited: false, deleted: false
+                };
+                messages.push(msg);
+                saveMessages();
+                const recipient = users.get(to);
+                if (recipient?.ws?.readyState === WebSocket.OPEN) {
+                    recipient.ws.send(JSON.stringify({ type: 'new_message', message: msg }));
+                    msg.status = 'delivered';
+                }
+                ws.send(JSON.stringify({ type: 'new_message', message: msg }));
+            }
+            
+            // Пост в ленту
             if (data.type === 'new_post') {
                 const { text, isImage } = data;
                 const user = users.get(currentUser);
@@ -246,12 +188,10 @@ wss.on('connection', (ws) => {
                     author: currentUser,
                     authorName: user.name,
                     authorAvatar: user.avatar,
-                    text: text,
-                    isImage: isImage || false,
+                    text, isImage: isImage || false,
                     time: Date.now(),
                     timeStr: new Date().toLocaleString(),
-                    likes: 0,
-                    comments: 0
+                    likes: 0, comments: 0
                 };
                 posts.unshift(post);
                 savePosts();
@@ -259,88 +199,7 @@ wss.on('connection', (ws) => {
                 return;
             }
             
-            // === ЛИЧНОЕ СООБЩЕНИЕ ===
-            if (data.type === 'message') {
-                const { to, text, isImage } = data;
-                const msg = {
-                    id: nextId++, from: currentUser, to, text, isImage: isImage || false,
-                    time: Date.now(),
-                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                    status: 'sent', read: false, edited: false, deleted: false, isGroup: false, isChannel: false
-                };
-                messages.push(msg);
-                saveMessages();
-                const recipient = users.get(to);
-                if (recipient && recipient.ws && recipient.ws.readyState === WebSocket.OPEN) {
-                    recipient.ws.send(JSON.stringify({ type: 'new_message', message: msg }));
-                    msg.status = 'delivered';
-                    ws.send(JSON.stringify({ type: 'new_message', message: msg }));
-                } else {
-                    ws.send(JSON.stringify({ type: 'new_message', message: msg }));
-                }
-                return;
-            }
-            
-            // === ГРУППОВОЕ СООБЩЕНИЕ ===
-            if (data.type === 'group_message') {
-                const { groupId, text, isImage } = data;
-                const group = groups.get(groupId);
-                if (!group || !group.members.includes(currentUser)) {
-                    ws.send(JSON.stringify({ type: 'error', text: 'Нет доступа к группе' }));
-                    return;
-                }
-                const msg = {
-                    id: nextId++, from: currentUser, to: groupId, text, isImage: isImage || false,
-                    time: Date.now(),
-                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                    status: 'sent', read: false, edited: false, deleted: false, isGroup: true, isChannel: false
-                };
-                messages.push(msg);
-                saveMessages();
-                broadcastToGroup(groupId, { type: 'new_message', message: msg }, currentUser);
-                ws.send(JSON.stringify({ type: 'new_message', message: msg }));
-                return;
-            }
-            
-            // === СООБЩЕНИЕ В КАНАЛ ===
-            if (data.type === 'channel_message') {
-                const { channelId, text, isImage } = data;
-                const channel = channels.get(channelId);
-                if (!channel) {
-                    ws.send(JSON.stringify({ type: 'error', text: 'Канал не найден' }));
-                    return;
-                }
-                if (!channel.subscribers.includes(currentUser)) {
-                    ws.send(JSON.stringify({ type: 'error', text: 'Нет доступа к каналу' }));
-                    return;
-                }
-                const msg = {
-                    id: nextId++, from: currentUser, to: channelId, text, isImage: isImage || false,
-                    time: Date.now(),
-                    timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                    status: 'sent', read: false, edited: false, deleted: false, isGroup: false, isChannel: true
-                };
-                messages.push(msg);
-                saveMessages();
-                broadcastToChannel(channelId, { type: 'new_message', message: msg }, currentUser);
-                ws.send(JSON.stringify({ type: 'new_message', message: msg }));
-                return;
-            }
-            
-            // === СОЗДАНИЕ ГРУППЫ ===
-            if (data.type === 'create_group') {
-                const { name, members } = data;
-                const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-                groups.set(groupId, {
-                    name, members: [currentUser, ...members], owner: currentUser, avatar: null, createdAt: Date.now()
-                });
-                broadcastGroupList();
-                saveGroups();
-                ws.send(JSON.stringify({ type: 'group_created', groupId, name }));
-                return;
-            }
-            
-            // === ПРОЧИТАНО ===
+            // Прочитано
             if (data.type === 'read') {
                 const { messageId } = data;
                 const msg = messages.find(m => m.id === messageId);
@@ -353,37 +212,7 @@ wss.on('connection', (ws) => {
                 return;
             }
             
-            // === РЕДАКТИРОВАНИЕ ===
-            if (data.type === 'edit') {
-                const { messageId, newText } = data;
-                const msg = messages.find(m => m.id === messageId);
-                if (msg && msg.from === currentUser) {
-                    msg.text = newText;
-                    msg.edited = true;
-                    if (msg.isChannel) broadcastToChannel(msg.to, { type: 'message_edited', messageId, newText });
-                    else if (msg.isGroup) broadcastToGroup(msg.to, { type: 'message_edited', messageId, newText });
-                    else broadcastToUser(msg.to, { type: 'message_edited', messageId, newText });
-                    saveMessages();
-                }
-                return;
-            }
-            
-            // === УДАЛЕНИЕ ===
-            if (data.type === 'delete') {
-                const { messageId } = data;
-                const msg = messages.find(m => m.id === messageId);
-                if (msg && msg.from === currentUser) {
-                    msg.text = '[Удалено]';
-                    msg.deleted = true;
-                    if (msg.isChannel) broadcastToChannel(msg.to, { type: 'message_deleted', messageId });
-                    else if (msg.isGroup) broadcastToGroup(msg.to, { type: 'message_deleted', messageId });
-                    else broadcastToUser(msg.to, { type: 'message_deleted', messageId });
-                    saveMessages();
-                }
-                return;
-            }
-            
-        } catch(e) { console.error('Ошибка:', e); }
+        } catch(e) { console.error(e); }
     });
     
     ws.on('close', () => {
@@ -401,5 +230,5 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Сервер запущен: http://localhost:${PORT}`);
+    console.log(`✅ Сервер: http://localhost:${PORT}`);
 });
