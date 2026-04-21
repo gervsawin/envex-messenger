@@ -13,7 +13,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ============ ЦВЕТОВЫЕ ТЕМЫ ============ */
         :root {
             --bg: #0a0a0f;
             --bg-side: rgba(15, 15, 20, 0.85);
@@ -63,7 +62,6 @@
             transition: background 0.2s;
         }
 
-        /* Анимации */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -74,7 +72,7 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* ============ SPLASH ============ */
+        /* Splash */
         .splash {
             position: fixed;
             inset: 0;
@@ -98,7 +96,7 @@
         }
         .splash-title { font-size: 16px; font-weight: 500; color: var(--text-secondary); }
 
-        /* ============ AUTH ============ */
+        /* Auth */
         .auth {
             position: fixed;
             inset: 0;
@@ -183,7 +181,7 @@
             text-align: center;
         }
 
-        /* ============ APP ============ */
+        /* App */
         .app {
             display: none;
             width: 100%;
@@ -194,7 +192,7 @@
             height: 100%;
         }
 
-        /* ============ ЛЕВАЯ ПАНЕЛЬ (ЧАТЫ) ============ */
+        /* Левая панель (чаты) */
         .sidebar {
             width: 300px;
             background: var(--bg-side);
@@ -297,7 +295,7 @@
         .chat-name { font-weight: 500; font-size: 14px; margin-bottom: 2px; }
         .chat-status { font-size: 11px; color: var(--text-secondary); }
 
-        /* ============ ЦЕНТР (ЧАТ) ============ */
+        /* Центр (чат) */
         .chat-panel {
             flex: 1;
             display: flex;
@@ -401,7 +399,7 @@
             padding: 48px 20px;
         }
 
-        /* ============ ПРАВАЯ ПАНЕЛЬ (ПРОФИЛЬ + НАСТРОЙКИ) ============ */
+        /* Правая панель (профиль + настройки) */
         .right-panel {
             width: 300px;
             background: var(--bg-side);
@@ -411,35 +409,11 @@
             flex-direction: column;
             flex-shrink: 0;
         }
-        .top-nav {
-            display: flex;
-            gap: 4px;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        .nav-link {
-            flex: 1;
-            padding: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            text-align: center;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-        .nav-link:hover { background: var(--hover); color: var(--accent); }
-        .nav-link.active {
-            background: var(--accent-gradient);
-            color: white;
-        }
-        .profile-view, .feed-view {
-            display: none;
+        .profile-view {
             flex: 1;
             overflow-y: auto;
             padding: 16px;
         }
-        .profile-view.active, .feed-view.active { display: block; }
         .profile-header {
             text-align: center;
             background: var(--bg-card);
@@ -538,92 +512,8 @@
             background: var(--accent);
             color: white;
         }
-        .feed-posts {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .post-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 14px;
-            transition: 0.2s;
-        }
-        .post-card:hover { transform: translateY(-2px); }
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .post-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--accent-gradient);
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        .post-author h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-        .post-author span { font-size: 10px; color: var(--text-tertiary); }
-        .post-content { font-size: 13px; line-height: 1.4; margin-bottom: 10px; }
-        .post-content img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 8px;
-        }
-        .post-actions {
-            display: flex;
-            gap: 16px;
-            padding-top: 8px;
-            border-top: 1px solid var(--border);
-        }
-        .post-action {
-            font-size: 12px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .post-action:hover { color: var(--accent); }
-        .feed-input {
-            padding: 12px;
-            background: var(--bg-side);
-            border-top: 1px solid var(--border);
-        }
-        .feed-input-wrapper {
-            display: flex;
-            gap: 8px;
-            background: var(--bg-card);
-            border-radius: 40px;
-            padding: 4px 10px;
-        }
-        .feed-input-wrapper input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text);
-            outline: none;
-            font-size: 13px;
-            padding: 10px 4px;
-        }
-        .feed-attach, .feed-send {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .feed-attach { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
-        .feed-send { background: var(--accent-gradient); color: white; }
 
-        /* ============ MODAL ============ */
+        /* Modal */
         .modal {
             position: fixed;
             inset: 0;
@@ -674,7 +564,7 @@
             font-size: 14px;
         }
 
-        /* ============ MOBILE ============ */
+        /* Mobile */
         @media (max-width: 900px) {
             .right-panel { width: 280px; }
         }
@@ -760,12 +650,7 @@
 
         <!-- Правая панель: профиль + настройки -->
         <div class="right-panel" id="rightPanel">
-            <div class="top-nav">
-                <div class="nav-link active" data-view="profile">Профиль</div>
-                <div class="nav-link" data-view="feed">Лента</div>
-            </div>
-
-            <div class="profile-view active" id="profileView">
+            <div class="profile-view" id="profileView">
                 <div class="profile-header">
                     <div class="profile-avatar" id="profileAvatar" onclick="openAvatarModal()">?</div>
                     <div class="profile-name" id="profileName"></div>
@@ -803,17 +688,6 @@
                     <div class="setting-row" id="logoutRow"><span>Выйти</span><span style="color:#ef4444;">→</span></div>
                 </div>
             </div>
-
-            <div class="feed-view" id="feedView">
-                <div class="feed-posts" id="feedPosts"><div class="empty-state">Нет сообщений</div></div>
-                <div class="feed-input">
-                    <div class="feed-input-wrapper">
-                        <button class="feed-attach" id="feedAttachBtn">+</button>
-                        <input type="text" id="feedInput" placeholder="Что нового?">
-                        <button class="feed-send" id="feedSendBtn">→</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -829,7 +703,7 @@
 <div id="groupModal" class="modal"><div class="modal-content"><div class="modal-header">Создать группу</div><input type="text" id="groupName" class="auth-input" placeholder="Название"><div id="groupMembersList" style="max-height:200px; overflow-y:auto;"></div><button id="createGroupConfirm" class="auth-btn">Создать</button><button id="closeGroupModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 
 <script>
-    let ws = null, currentUser = null, currentChat = null, allUsers = [], allGroups = [], allMessages = {}, allPosts = [], isLoginMode = true, isConnecting = false, reconnectTimer = null;
+    let ws = null, currentUser = null, currentChat = null, allUsers = [], allGroups = [], allMessages = {}, isLoginMode = true, isConnecting = false, reconnectTimer = null;
     const SESSION_KEY = 'envex_user_data';
 
     function saveUserData(u,p,n,a){ localStorage.setItem(SESSION_KEY, JSON.stringify({ username:u, password:p, name:n, avatar:a, savedAt:Date.now() })); }
@@ -838,7 +712,7 @@
     function showError(m){ const e=document.getElementById('errorMsg'); if(e){ e.textContent=m; setTimeout(()=>e.textContent='',3000); } }
     function getWsUrl(){ return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host; }
 
-    // ============ ЦВЕТОВЫЕ ТЕМЫ ============
+    // Цветовые темы
     function setColorTheme(theme) {
         document.body.classList.remove('theme-red', 'theme-pink', 'theme-yellow', 'theme-green', 'theme-purple', 'theme-orange', 'theme-cyan');
         if (theme !== 'default') document.body.classList.add(`theme-${theme}`);
@@ -886,8 +760,6 @@
                 }
                 if(d.type==='users'){ allUsers=d.users; renderChats(); updateStats(); }
                 if(d.type==='groups'){ allGroups=d.groups; renderGroups(); }
-                if(d.type==='posts'){ allPosts=d.posts; renderFeed(); }
-                if(d.type==='new_post'){ allPosts.unshift(d.post); renderFeed(); }
                 if(d.type==='history'){
                     allMessages={};
                     d.messages.forEach(msg=>{ const id=msg.from===currentUser?msg.to:msg.from; if(!allMessages[id]) allMessages[id]=[]; allMessages[id].push(msg); });
@@ -952,9 +824,7 @@
     }
     
     function sendMessage(){ const i=document.getElementById('messageInput'), t=i.value.trim(); if(!t || !currentChat || !ws || ws.readyState!==WebSocket.OPEN) return; ws.send(JSON.stringify({ type:'message', to:currentChat.id, text:t, isImage:t.startsWith('data:image') })); i.value=''; }
-    function sendPost(){ const i=document.getElementById('feedInput'), t=i.value.trim(); if(!t || !ws || ws.readyState!==WebSocket.OPEN) return; ws.send(JSON.stringify({ type:'new_post', text:t, isImage:t.startsWith('data:image') })); i.value=''; }
-    function attachPhoto(t){ const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=e=>{ const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=ev=>{ if(t==='chat') document.getElementById('messageInput').value=ev.target.result; else document.getElementById('feedInput').value=ev.target.result; if(t==='chat') sendMessage(); else sendPost(); }; r.readAsDataURL(f); } }; i.click(); }
-    function renderFeed(){ const c=document.getElementById('feedPosts'); if(!allPosts.length){ c.innerHTML='<div class="empty-state">Нет сообщений</div>'; return; } c.innerHTML=allPosts.map(p=>`<div class="post-card"><div class="post-header"><div class="post-avatar" style="${p.authorAvatar?`background-image:url(${p.authorAvatar});background-size:cover;`:''}">${!p.authorAvatar?(p.authorName?.charAt(0)||p.author.charAt(1)||p.author.charAt(0)).toUpperCase():''}</div><div class="post-author"><h4>${p.authorName||p.author}</h4><span>${p.timeStr||new Date(p.time).toLocaleString()}</span></div></div><div class="post-content">${p.isImage?`<img src="${p.text}" onclick="viewImage('${p.text}')">`:escapeHtml(p.text)}</div><div class="post-actions"><span class="post-action">❤️ ${p.likes||0}</span><span class="post-action">💬 ${p.comments||0}</span></div></div>`).join(''); }
+    function attachPhoto(){ const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=e=>{ const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=ev=>{ document.getElementById('messageInput').value=ev.target.result; sendMessage(); }; r.readAsDataURL(f); } }; i.click(); }
     
     function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
     function viewImage(u){ const w=window.open(); w.document.write(`<img src="${u}" style="max-width:100%; background:black;">`); }
@@ -981,13 +851,9 @@
     document.getElementById('authSubmitBtn').onclick=()=>{ const u=document.getElementById('authUsername').value.trim(), p=document.getElementById('authPassword').value, n=document.getElementById('authName').value.trim(); if(!u||!p) return showError('Заполните поля'); if(!u.startsWith('@')) return showError('Username должен начинаться с @'); if(!isLoginMode && !n) return showError('Введите имя'); connectAndAuth(isLoginMode?'login':'register',u,p,n); };
     document.getElementById('chatsTabBtn').onclick=()=>{ document.getElementById('chatsTabBtn').classList.add('active'); document.getElementById('groupsTabBtn').classList.remove('active'); document.getElementById('chatsList').style.display='block'; document.getElementById('groupsList').style.display='none'; renderChats(); };
     document.getElementById('groupsTabBtn').onclick=()=>{ document.getElementById('groupsTabBtn').classList.add('active'); document.getElementById('chatsTabBtn').classList.remove('active'); document.getElementById('chatsList').style.display='none'; document.getElementById('groupsList').style.display='block'; renderGroups(); };
-    document.querySelectorAll('.nav-link').forEach(l=>{ l.onclick=()=>{ const v=l.dataset.view; document.querySelectorAll('.nav-link').forEach(ln=>ln.classList.remove('active')); l.classList.add('active'); if(v==='profile'){ document.getElementById('profileView').classList.add('active'); document.getElementById('feedView').classList.remove('active'); }else{ document.getElementById('profileView').classList.remove('active'); document.getElementById('feedView').classList.add('active'); renderFeed(); } }; });
     document.getElementById('sendBtn').onclick=sendMessage;
-    document.getElementById('feedSendBtn').onclick=sendPost;
     document.getElementById('messageInput').onkeypress=e=>{ if(e.key==='Enter') sendMessage(); };
-    document.getElementById('feedInput').onkeypress=e=>{ if(e.key==='Enter') sendPost(); };
-    document.getElementById('chatAttachBtn').onclick=()=>attachPhoto('chat');
-    document.getElementById('feedAttachBtn').onclick=()=>attachPhoto('feed');
+    document.getElementById('chatAttachBtn').onclick=attachPhoto;
     document.getElementById('searchInput').oninput=renderChats;
     document.getElementById('editNameRow').onclick=openEditNameModal;
     document.getElementById('changePasswordRow').onclick=openPasswordModal;
