@@ -487,9 +487,18 @@
             border-radius: 24px;
             padding: 24px;
             width: 100%;
-            max-width: 360px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         .modal-header { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
         .avatar-preview {
             width: 80px;
             height: 80px;
@@ -500,14 +509,20 @@
             background-position: center;
         }
         .policy-text {
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.6;
             color: var(--text-secondary);
         }
         .policy-text h3 {
             color: var(--text);
-            margin: 12px 0 6px;
-            font-size: 14px;
+            margin: 16px 0 8px;
+            font-size: 16px;
+        }
+        .policy-text ul {
+            margin: 8px 0 12px 20px;
+        }
+        .policy-text li {
+            margin-bottom: 4px;
         }
 
         /* Mobile */
@@ -528,6 +543,7 @@
             .chat-panel { z-index: 200; }
             .message { max-width: 85%; }
             .auth-card { padding: 32px 24px; width: 90%; }
+            .modal-content { max-width: 90%; padding: 20px; }
         }
     </style>
 </head>
@@ -616,9 +632,79 @@
 
 <button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; background:var(--accent-gradient); border:none; border-radius:50%; color:white; font-size:22px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
 
-<!-- Модалки -->
-<div id="policyModal" class="modal"><div class="modal-content"><div class="modal-header">Политика использования</div><div class="policy-text"><p><strong>Дата вступления в силу: 1.05.2026</strong></p><p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p><h3>1. Общие положения</h3><p>Envex — платформа для обмена сообщениями.</p><h3>2. Регистрация и аккаунт</h3><ul><li>Пользователь обязан предоставлять достоверную информацию.</li><li>Запрещено передавать доступ третьим лицам.</li></ul><h3>3. Допустимое использование</h3><p>Запрещается: спам, угрозы, оскорбления, незаконный контент.</p><h3>4. Конфиденциальность</h3><p>Мы не продаем личные данные третьим лицам.</p></div><button class="auth-btn" id="closePolicyBtn" style="margin-top:16px;">Закрыть</button></div></div>
+<!-- Policy Modal (полная версия) -->
+<div id="policyModal" class="modal">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="modal-header" style="margin-bottom: 0;">Политика использования</div>
+            <button class="modal-close" id="closePolicyBtn">&times;</button>
+        </div>
+        <div class="policy-text">
+            <p><strong>Дата вступления в силу: 1.05.2026</strong></p>
+            <p>Добро пожаловать в Envex. Используя наш мессенджер, вы соглашаетесь с настоящей Политикой использования.</p>
 
+            <h3>1. Общие положения</h3>
+            <p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения. Пользователь обязуется использовать сервис только в законных целях и соблюдать применимое законодательство.</p>
+
+            <h3>2. Регистрация и аккаунт</h3>
+            <ul>
+                <li>Пользователь обязан предоставлять достоверную информацию.</li>
+                <li>Вы несете ответственность за безопасность своего аккаунта.</li>
+                <li>Запрещено передавать доступ третьим лицам.</li>
+            </ul>
+
+            <h3>3. Допустимое использование</h3>
+            <p>Пользователям запрещается:</p>
+            <ul>
+                <li>Нарушать законы и права третьих лиц</li>
+                <li>Распространять спам, мошеннический контент или вредоносное ПО</li>
+                <li>Публиковать угрозы, оскорбления, призывы к насилию</li>
+                <li>Загружать незаконный контент (включая пиратские материалы)</li>
+                <li>Использовать Envex для преследования или травли других пользователей</li>
+            </ul>
+
+            <h3>4. Контент пользователей</h3>
+            <ul>
+                <li>Пользователь несет полную ответственность за отправляемый контент</li>
+                <li>Envex не контролирует каждое сообщение, но оставляет за собой право удалять контент, нарушающий правила</li>
+                <li>Пользователь предоставляет Envex право обрабатывать контент исключительно для работы сервиса</li>
+            </ul>
+
+            <h3>5. Конфиденциальность</h3>
+            <ul>
+                <li>Мы уважаем вашу приватность и обрабатываем данные в соответствии с Политикой конфиденциальности</li>
+                <li>Сообщения могут быть защищены сквозным шифрованием (если применимо)</li>
+                <li>Мы не продаем личные данные третьим лицам</li>
+            </ul>
+
+            <h3>6. Ограничение ответственности</h3>
+            <ul>
+                <li>Envex предоставляется «как есть»</li>
+                <li>Мы не гарантируем бесперебойную работу сервиса</li>
+                <li>Envex не несет ответственности за действия пользователей</li>
+            </ul>
+
+            <h3>7. Блокировка и удаление аккаунта</h3>
+            <p>Мы можем:</p>
+            <ul>
+                <li>Ограничить доступ или удалить аккаунт при нарушении правил</li>
+                <li>Удалять контент без предварительного уведомления</li>
+            </ul>
+
+            <h3>8. Интеллектуальная собственность</h3>
+            <ul>
+                <li>Все права на платформу Envex принадлежат разработчику</li>
+                <li>Пользователи не имеют права копировать, модифицировать или распространять сервис без разрешения</li>
+            </ul>
+
+            <h3>9. Изменения политики</h3>
+            <p>Мы можем обновлять данную политику. Продолжение использования сервиса означает согласие с изменениями.</p>
+        </div>
+        <button id="closePolicyBtnFull" class="auth-btn" style="margin-top: 20px;">Закрыть</button>
+    </div>
+</div>
+
+<!-- Остальные модалки -->
 <div id="editNameModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить имя</div><input type="text" id="newNameInput" class="auth-input"><button id="saveNameBtn" class="auth-btn">Сохранить</button><button id="closeNameModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="passwordModal" class="modal"><div class="modal-content"><div class="modal-header">Изменить пароль</div><input type="password" id="oldPassword" class="auth-input" placeholder="Старый пароль"><input type="password" id="newPassword" class="auth-input" placeholder="Новый пароль"><input type="password" id="confirmPassword" class="auth-input" placeholder="Подтвердите"><button id="savePasswordBtn" class="auth-btn">Сохранить</button><button id="closePasswordModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
 <div id="avatarModal" class="modal"><div class="modal-content"><div class="modal-header">Фото профиля</div><div class="avatar-preview" id="avatarPreview"></div><input type="file" id="avatarInput" accept="image/*" style="display:none;"><button id="uploadAvatarBtn" class="auth-btn">Загрузить</button><button id="closeAvatarModal" class="auth-btn" style="margin-top:10px; background:var(--bg);">Отмена</button></div></div>
@@ -686,7 +772,7 @@
                     isConnecting=false;
                     if(btn) btn.disabled=false;
                 }
-                if(d.type==='users'){ allUsers=d.users; renderChats(); updateStats(); }
+                if(d.type==='users'){ allUsers=d.users; renderChats(); }
                 if(d.type==='history'){
                     allMessages={};
                     d.messages.forEach(msg=>{ const id=msg.from===currentUser?msg.to:msg.from; if(!allMessages[id]) allMessages[id]=[]; allMessages[id].push(msg); });
@@ -749,7 +835,6 @@
             else{ el.style.backgroundImage=''; el.textContent=n?.charAt(0).toUpperCase()||'?'; }
         });
     }
-    function updateStats(){ let c=0; for(let id in allMessages) c+=allMessages[id].length; }
     
     function renderChats(){
         const term = document.getElementById('searchInput').value.toLowerCase();
@@ -836,6 +921,8 @@
     // Модалки
     document.getElementById('policyBtn').onclick = () => document.getElementById('policyModal').style.display = 'flex';
     document.getElementById('closePolicyBtn').onclick = () => document.getElementById('policyModal').style.display = 'none';
+    document.getElementById('closePolicyBtnFull').onclick = () => document.getElementById('policyModal').style.display = 'none';
+    document.getElementById('policyModal').onclick = (e) => { if(e.target === document.getElementById('policyModal')) document.getElementById('policyModal').style.display = 'none'; };
     
     function openEditNameModal(){ document.getElementById('newNameInput').value=document.getElementById('sidebarUserName').textContent; document.getElementById('editNameModal').style.display='flex'; }
     function saveName(){ const n=document.getElementById('newNameInput').value.trim(); if(!n) return showError('Введите имя'); if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', name:n })); document.getElementById('editNameModal').style.display='none'; }
