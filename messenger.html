@@ -13,6 +13,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ============ БАЗОВЫЕ ПЕРЕМЕННЫЕ (синяя тема по умолчанию) ============ */
         :root {
             --bg: #0a0a0f;
             --bg-side: rgba(15, 15, 20, 0.8);
@@ -33,6 +34,55 @@
             --blur: blur(12px);
         }
 
+        /* Красная тема */
+        body.theme-red {
+            --accent: #ef4444;
+            --accent-gradient: linear-gradient(135deg, #ef4444, #f97316);
+            --sent: #ef4444;
+        }
+
+        /* Розовая тема */
+        body.theme-pink {
+            --accent: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #ec4899, #f43f5e);
+            --sent: #ec4899;
+        }
+
+        /* Жёлтая тема */
+        body.theme-yellow {
+            --accent: #eab308;
+            --accent-gradient: linear-gradient(135deg, #eab308, #f59e0b);
+            --sent: #eab308;
+        }
+
+        /* Зелёная тема */
+        body.theme-green {
+            --accent: #22c55e;
+            --accent-gradient: linear-gradient(135deg, #22c55e, #10b981);
+            --sent: #22c55e;
+        }
+
+        /* Фиолетовая тема */
+        body.theme-purple {
+            --accent: #a855f7;
+            --accent-gradient: linear-gradient(135deg, #a855f7, #8b5cf6);
+            --sent: #a855f7;
+        }
+
+        /* Оранжевая тема */
+        body.theme-orange {
+            --accent: #f97316;
+            --accent-gradient: linear-gradient(135deg, #f97316, #ef4444);
+            --sent: #f97316;
+        }
+
+        /* Голубая тема */
+        body.theme-cyan {
+            --accent: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --sent: #06b6d4;
+        }
+
         body.light {
             --bg: #f0f2f5;
             --bg-side: rgba(255,255,255,0.8);
@@ -41,14 +91,10 @@
             --text: #1a1a2e;
             --text-secondary: #6a6a7e;
             --text-tertiary: #9a9aae;
-            --accent: #3b82f6;
-            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            --sent: #3b82f6;
             --received: #eef2f5;
             --hover: rgba(0,0,0,0.03);
             --shadow: 0 8px 32px rgba(0,0,0,0.08);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --blur: blur(12px);
         }
 
         body {
@@ -59,6 +105,7 @@
             overflow: hidden;
             font-size: 14px;
             font-weight: 400;
+            transition: background 0.2s ease;
         }
 
         /* ============ АНИМАЦИИ ============ */
@@ -70,16 +117,6 @@
         @keyframes slideIn {
             from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes glow {
-            0% { box-shadow: 0 0 0 0 var(--accent); }
-            100% { box-shadow: 0 0 0 8px transparent; }
         }
 
         /* ============ SPLASH ============ */
@@ -241,9 +278,9 @@
             height: 100%;
         }
 
-        /* ============ SIDEBAR ============ */
+        /* ============ SIDEBAR (ЧАТЫ СЛЕВА) ============ */
         .sidebar {
-            width: 320px;
+            width: 300px;
             background: var(--bg-side);
             backdrop-filter: var(--blur);
             border-right: 1px solid var(--border);
@@ -254,20 +291,20 @@
         }
 
         .sidebar-header {
-            padding: 24px 20px;
+            padding: 20px;
             border-bottom: 1px solid var(--border);
         }
 
         .user-card {
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--accent-gradient);
             border-radius: 50%;
             background-size: cover;
@@ -276,7 +313,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             transition: transform 0.2s;
         }
@@ -284,26 +321,26 @@
         .avatar:hover { transform: scale(1.02); }
 
         .user-details h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 2px;
         }
 
         .user-details p {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--online);
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text);
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             transition: all 0.2s;
         }
 
@@ -313,16 +350,16 @@
 
         .tabs {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 13px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             color: var(--text-secondary);
@@ -343,13 +380,13 @@
         }
 
         .chat-item {
-            padding: 12px;
+            padding: 10px 12px;
             margin-bottom: 4px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 14px;
             transition: all 0.2s;
             animation: slideIn 0.2s ease;
         }
@@ -360,14 +397,14 @@
         }
 
         .chat-avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--bg-card);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             background-size: cover;
             background-position: center;
@@ -379,55 +416,58 @@
 
         .chat-name {
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             margin-bottom: 2px;
         }
 
         .chat-status {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
         }
 
-        /* ============ RIGHT PANEL ============ */
+        /* ============ RIGHT PANEL (КОМПАКТНЫЙ) ============ */
         .right-panel {
-            flex: 1;
+            width: 320px;
+            background: var(--bg-side);
+            backdrop-filter: var(--blur);
+            border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            background: var(--bg);
+            flex-shrink: 0;
         }
 
         /* Top Navigation */
         .top-nav {
             display: flex;
-            gap: 8px;
-            background: var(--bg-side);
-            backdrop-filter: var(--blur);
+            gap: 4px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
-            padding: 0 24px;
         }
 
         .nav-link {
-            padding: 16px 28px;
-            font-size: 14px;
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            text-align: center;
+            border-radius: 10px;
             transition: all 0.2s;
         }
 
-        .nav-link:hover { color: var(--accent); }
+        .nav-link:hover { background: var(--hover); color: var(--accent); }
         .nav-link.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+            background: var(--accent-gradient);
+            color: white;
         }
 
-        /* ============ PROFILE ============ */
+        /* ============ PROFILE (КОМПАКТНЫЙ) ============ */
         .profile-view {
             display: none;
             flex-direction: column;
-            height: 100%;
             overflow-y: auto;
+            padding: 16px;
         }
 
         .profile-view.active {
@@ -435,27 +475,25 @@
         }
 
         .profile-header {
-            padding: 40px;
             text-align: center;
+            padding: 20px;
             background: var(--bg-card);
-            backdrop-filter: var(--blur);
-            margin: 20px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
+            border-radius: 20px;
+            margin-bottom: 16px;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: var(--accent-gradient);
             border-radius: 50%;
-            margin: 0 auto 20px;
+            margin: 0 auto 12px;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 32px;
             font-weight: 500;
             cursor: pointer;
             transition: transform 0.2s;
@@ -464,54 +502,56 @@
         .profile-avatar:hover { transform: scale(1.02); }
 
         .profile-name {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .profile-username {
-            font-size: 13px;
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .profile-stats {
             display: flex;
             justify-content: center;
-            gap: 48px;
+            gap: 32px;
         }
 
         .stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
         }
 
         .stat-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-tertiary);
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .settings-section {
-            padding: 0 20px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 16px;
         }
 
         .settings-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-tertiary);
-            margin: 20px 0 12px 0;
+            margin: 12px 0 8px 0;
         }
 
+        .settings-title:first-child { margin-top: 0; }
+
         .setting-row {
-            background: var(--bg-card);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-bottom: 8px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -524,35 +564,62 @@
             transform: translateX(4px);
         }
 
+        .color-themes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { border-color: white; box-shadow: 0 0 0 2px var(--bg); }
+
+        .color-default { background: #3b82f6; }
+        .color-red { background: #ef4444; }
+        .color-pink { background: #ec4899; }
+        .color-yellow { background: #eab308; }
+        .color-green { background: #22c55e; }
+        .color-purple { background: #a855f7; }
+        .color-orange { background: #f97316; }
+        .color-cyan { background: #06b6d4; }
+
         .theme-options {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 8px;
         }
 
         .theme-option {
             flex: 1;
-            padding: 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            padding: 8px;
+            background: var(--bg);
+            border-radius: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .theme-option.active {
-            background: var(--accent-gradient);
+            background: var(--accent);
             color: white;
-            border-color: transparent;
         }
 
-        /* ============ FEED ============ */
+        /* ============ FEED (КОМПАКТНЫЙ) ============ */
         .feed-view {
             display: none;
             flex-direction: column;
             height: 100%;
+            overflow-y: auto;
         }
 
         .feed-view.active {
@@ -560,13 +627,13 @@
         }
 
         .feed-header {
-            padding: 24px 32px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .feed-header h1 {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
-            letter-spacing: -0.5px;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             background-clip: text;
@@ -576,37 +643,35 @@
         .feed-posts {
             flex: 1;
             overflow-y: auto;
-            padding: 0 24px 20px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .post-card {
             background: var(--bg-card);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 14px;
             transition: all 0.2s;
             animation: fadeIn 0.3s ease;
         }
 
         .post-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-sm);
         }
 
         .post-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .post-avatar {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             background: var(--accent-gradient);
             border-radius: 50%;
             background-size: cover;
@@ -614,67 +679,66 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 500;
         }
 
         .post-author h4 {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             margin-bottom: 2px;
         }
 
         .post-author span {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-tertiary);
         }
 
         .post-content {
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 14px;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 10px;
         }
 
         .post-content img {
             max-width: 100%;
-            border-radius: 16px;
-            margin-top: 10px;
+            border-radius: 12px;
+            margin-top: 8px;
             cursor: pointer;
         }
 
         .post-actions {
             display: flex;
-            gap: 24px;
-            padding-top: 12px;
+            gap: 16px;
+            padding-top: 8px;
             border-top: 1px solid var(--border);
         }
 
         .post-action {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             cursor: pointer;
             transition: color 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .post-action:hover { color: var(--accent); }
 
         .feed-input {
-            padding: 16px 24px 24px;
+            padding: 12px;
             background: var(--bg-side);
-            backdrop-filter: var(--blur);
             border-top: 1px solid var(--border);
         }
 
         .feed-input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 60px;
-            padding: 6px 12px;
+            border-radius: 40px;
+            padding: 4px 10px;
         }
 
         .feed-input-wrapper input {
@@ -683,22 +747,22 @@
             border: none;
             color: var(--text);
             outline: none;
-            font-size: 14px;
-            padding: 12px 8px;
+            font-size: 13px;
+            padding: 10px 4px;
         }
 
         .feed-attach, .feed-send {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             transition: all 0.2s;
         }
 
         .feed-attach {
-            background: var(--bg-card);
+            background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
         }
@@ -712,33 +776,27 @@
 
         /* ============ CHAT PANEL ============ */
         .chat-panel {
-            position: fixed;
-            top: 0;
-            left: 320px;
-            right: 0;
-            bottom: 0;
-            background: var(--bg);
+            flex: 1;
             display: none;
             flex-direction: column;
-            z-index: 200;
-            animation: fadeIn 0.2s ease;
+            background: var(--bg);
         }
 
         .chat-panel.active { display: flex; }
 
         .chat-header {
-            padding: 16px 24px;
+            padding: 12px 20px;
             background: var(--bg-side);
             backdrop-filter: var(--blur);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .chat-back {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 50%;
@@ -746,24 +804,24 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             transition: all 0.2s;
         }
 
         .chat-back:hover { background: var(--hover); }
 
         .chat-header h2 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .message {
@@ -776,26 +834,25 @@
         .message.received { align-self: flex-start; }
 
         .bubble {
-            padding: 10px 16px;
-            border-radius: 22px;
-            position: relative;
+            padding: 8px 14px;
+            border-radius: 18px;
         }
 
         .sent .bubble {
             background: var(--sent);
             color: white;
-            border-bottom-right-radius: 6px;
+            border-bottom-right-radius: 4px;
         }
 
         .received .bubble {
             background: var(--received);
-            border-bottom-left-radius: 6px;
+            border-bottom-left-radius: 4px;
         }
 
-        .message-text { font-size: 14px; line-height: 1.4; }
+        .message-text { font-size: 13px; line-height: 1.4; }
         .message-text img {
-            max-width: 200px;
-            border-radius: 14px;
+            max-width: 180px;
+            border-radius: 12px;
             margin-top: 6px;
             cursor: pointer;
         }
@@ -803,26 +860,25 @@
         .message-meta {
             display: flex;
             justify-content: flex-end;
-            gap: 6px;
-            margin-top: 6px;
-            font-size: 10px;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 9px;
             opacity: 0.6;
         }
 
         .chat-input-area {
-            padding: 16px 20px;
+            padding: 12px 16px;
             background: var(--bg-side);
-            backdrop-filter: var(--blur);
             border-top: 1px solid var(--border);
         }
 
         .chat-input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 60px;
-            padding: 6px 12px;
+            border-radius: 40px;
+            padding: 4px 10px;
         }
 
         .chat-input-wrapper input {
@@ -831,22 +887,22 @@
             border: none;
             color: var(--text);
             outline: none;
-            font-size: 14px;
-            padding: 12px 8px;
+            font-size: 13px;
+            padding: 10px 4px;
         }
 
         .chat-attach, .chat-send {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             transition: all 0.2s;
         }
 
         .chat-attach {
-            background: var(--bg-card);
+            background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
         }
@@ -861,7 +917,7 @@
         .empty-state {
             text-align: center;
             color: var(--text-tertiary);
-            padding: 60px 20px;
+            padding: 40px 20px;
         }
 
         /* ============ MODAL ============ */
@@ -882,25 +938,25 @@
             background: var(--bg-card);
             backdrop-filter: var(--blur);
             border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 28px;
+            border-radius: 24px;
+            padding: 24px;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             max-height: 80vh;
             overflow-y: auto;
             animation: fadeIn 0.2s ease;
         }
 
         .modal-header {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .modal-close {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             color: var(--text-secondary);
             transition: color 0.2s;
@@ -909,15 +965,15 @@
         .modal-close:hover { color: var(--accent); }
 
         .policy-text {
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 12px;
+            line-height: 1.5;
             color: var(--text-secondary);
         }
 
         .policy-text h3 {
             color: var(--text);
-            margin: 16px 0 8px;
-            font-size: 16px;
+            margin: 12px 0 6px;
+            font-size: 14px;
         }
 
         .avatar-preview {
@@ -925,12 +981,16 @@
             height: 80px;
             border-radius: 50%;
             background: var(--bg);
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
             background-size: cover;
             background-position: center;
         }
 
         /* ============ MOBILE ============ */
+        @media (max-width: 1024px) {
+            .right-panel { width: 280px; }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -938,34 +998,39 @@
                 top: 0;
                 bottom: 0;
                 width: 85%;
-                max-width: 300px;
+                max-width: 280px;
                 z-index: 300;
                 transform: translateX(-100%);
             }
             .sidebar.open { transform: translateX(0); }
-            .chat-panel { left: 0; z-index: 200; }
+            .right-panel {
+                position: fixed;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 85%;
+                max-width: 280px;
+                z-index: 300;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            .right-panel.open { transform: translateX(0); }
+            .chat-panel { z-index: 200; }
             .chat-back { display: flex; }
-            .top-nav { padding: 0 16px; }
-            .nav-link { padding: 14px 20px; }
-            .profile-header { margin: 16px; padding: 24px; }
-            .settings-section { padding: 0 16px 20px; }
-            .feed-header { padding: 20px; }
-            .feed-posts { padding: 0 16px 20px; }
-            .feed-input { padding: 12px 20px 20px; }
             .message { max-width: 85%; }
             .auth-card { padding: 32px 24px; width: 90%; }
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         ::-webkit-scrollbar-track {
             background: var(--bg-card);
         }
         ::-webkit-scrollbar-thumb {
             background: var(--text-tertiary);
-            border-radius: 5px;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -996,7 +1061,7 @@
 <!-- App -->
 <div class="app" id="appScreen">
     <div class="main-layout">
-        <!-- Sidebar -->
+        <!-- Sidebar (чаты слева) -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="user-card">
@@ -1016,8 +1081,24 @@
             <div class="chats-scroll" id="groupsList" style="display: none;"></div>
         </div>
 
-        <!-- Right Panel -->
-        <div class="right-panel">
+        <!-- Chat Panel (центр) -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <div class="chat-back" id="chatBackBtn">←</div>
+                <h2 id="chatName"></h2>
+            </div>
+            <div class="chat-messages" id="messagesList"><div class="empty-state">Выберите чат</div></div>
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <button class="chat-attach" id="chatAttachBtn">+</button>
+                    <input type="text" id="messageInput" placeholder="Сообщение">
+                    <button class="chat-send" id="sendBtn">→</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel (профиль и лента компактно) -->
+        <div class="right-panel" id="rightPanel">
             <div class="top-nav">
                 <div class="nav-link active" data-view="profile">Профиль</div>
                 <div class="nav-link" data-view="feed">Лента</div>
@@ -1038,8 +1119,25 @@
                     <div class="settings-title">Аккаунт</div>
                     <div class="setting-row" id="editNameRow"><span>Имя</span><span class="setting-value" id="editNameValue"></span></div>
                     <div class="setting-row" id="changePasswordRow"><span>Пароль</span><span class="setting-value">••••••••</span></div>
-                    <div class="settings-title">Внешний вид</div>
-                    <div class="theme-options"><div class="theme-option" data-theme="dark">Тёмная</div><div class="theme-option" data-theme="light">Светлая</div></div>
+                    
+                    <div class="settings-title">Цветовая тема</div>
+                    <div class="color-themes">
+                        <div class="color-option color-default active" onclick="setColorTheme('default')" title="Синяя"></div>
+                        <div class="color-option color-red" onclick="setColorTheme('red')" title="Красная"></div>
+                        <div class="color-option color-pink" onclick="setColorTheme('pink')" title="Розовая"></div>
+                        <div class="color-option color-yellow" onclick="setColorTheme('yellow')" title="Жёлтая"></div>
+                        <div class="color-option color-green" onclick="setColorTheme('green')" title="Зелёная"></div>
+                        <div class="color-option color-purple" onclick="setColorTheme('purple')" title="Фиолетовая"></div>
+                        <div class="color-option color-orange" onclick="setColorTheme('orange')" title="Оранжевая"></div>
+                        <div class="color-option color-cyan" onclick="setColorTheme('cyan')" title="Голубая"></div>
+                    </div>
+
+                    <div class="settings-title">Тёмный режим</div>
+                    <div class="theme-options">
+                        <div class="theme-option" data-theme="dark">Тёмная</div>
+                        <div class="theme-option" data-theme="light">Светлая</div>
+                    </div>
+
                     <div class="settings-title">Данные</div>
                     <div class="setting-row" id="clearDataRow"><span>Очистить кэш</span><span>→</span></div>
                     <div class="setting-row" id="logoutRow"><span>Выйти</span><span style="color:#ef4444;">→</span></div>
@@ -1059,31 +1157,15 @@
                 </div>
             </div>
         </div>
-
-        <!-- Chat Panel -->
-        <div class="chat-panel" id="chatPanel">
-            <div class="chat-header">
-                <div class="chat-back" id="chatBackBtn">←</div>
-                <h2 id="chatName"></h2>
-            </div>
-            <div class="chat-messages" id="messagesList"><div class="empty-state">Выберите чат</div></div>
-            <div class="chat-input-area">
-                <div class="chat-input-wrapper">
-                    <button class="chat-attach" id="chatAttachBtn">+</button>
-                    <input type="text" id="messageInput" placeholder="Сообщение">
-                    <button class="chat-send" id="sendBtn">→</button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
-<button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:52px; height:52px; background:var(--accent-gradient); border:none; border-radius:50%; color:white; font-size:24px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
+<button class="mobile-menu-btn" id="mobileMenuBtn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; background:var(--accent-gradient); border:none; border-radius:50%; color:white; font-size:22px; cursor:pointer; z-index:350; display:none; box-shadow:var(--shadow); align-items:center; justify-content:center;">☰</button>
 
 <!-- Policy Modal -->
 <div id="policyModal" class="modal">
     <div class="modal-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <div class="modal-header" style="margin-bottom: 0;">Политика использования</div>
             <button class="modal-close" id="closePolicyBtn">&times;</button>
         </div>
@@ -1094,12 +1176,8 @@
             <p>Envex — это платформа для обмена сообщениями, предназначенная для личного и делового общения.</p>
             <h3>2. Регистрация и аккаунт</h3>
             <ul><li>Пользователь обязан предоставлять достоверную информацию.</li><li>Вы несете ответственность за безопасность своего аккаунта.</li></ul>
-            <h3>3. Допустимое использование</h3>
-            <ul><li>Запрещено распространять спам, угрозы, оскорбления</li><li>Запрещено использовать Envex для преследования</li></ul>
-            <h3>4. Конфиденциальность</h3>
+            <h3>3. Конфиденциальность</h3>
             <ul><li>Мы не продаем личные данные третьим лицам</li></ul>
-            <h3>5. Изменения политики</h3>
-            <p>Мы можем обновлять данную политику. Продолжение использования означает согласие с изменениями.</p>
         </div>
     </div>
 </div>
@@ -1120,6 +1198,42 @@
     function showError(m){ const e=document.getElementById('errorMsg'); if(e){ e.textContent=m; setTimeout(()=>e.textContent='',3000); } }
     function getWsUrl(){ return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host; }
 
+    // ============ ЦВЕТОВЫЕ ТЕМЫ ============
+    function setColorTheme(theme) {
+        document.body.classList.remove('theme-red', 'theme-pink', 'theme-yellow', 'theme-green', 'theme-purple', 'theme-orange', 'theme-cyan');
+        if (theme !== 'default') {
+            document.body.classList.add(`theme-${theme}`);
+        }
+        localStorage.setItem('envex_color_theme', theme);
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+        document.querySelector(`.color-${theme}`)?.classList.add('active');
+    }
+
+    function loadColorTheme() {
+        const theme = localStorage.getItem('envex_color_theme');
+        if (theme && theme !== 'default') {
+            setColorTheme(theme);
+        } else {
+            document.querySelector('.color-default')?.classList.add('active');
+        }
+    }
+
+    // ============ ТЁМНАЯ/СВЕТЛАЯ ТЕМА ============
+    function toggleTheme(t) {
+        if (t === 'light') document.body.classList.add('light');
+        else document.body.classList.remove('light');
+        localStorage.setItem('envex_theme', t);
+        document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+        document.querySelector(`.theme-option[data-theme="${t}"]`).classList.add('active');
+    }
+
+    function loadTheme() {
+        const theme = localStorage.getItem('envex_theme') || 'dark';
+        toggleTheme(theme);
+        loadColorTheme();
+    }
+
+    // ============ WEBSOCKET ============
     function connectAndAuth(t,u,p,n){
         if(isConnecting) return;
         isConnecting=true;
@@ -1225,8 +1339,6 @@
     function saveName(){ const n=document.getElementById('newNameInput').value.trim(); if(!n) return showError('Введите имя'); if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', name:n })); document.getElementById('editNameModal').style.display='none'; }
     function openPasswordModal(){ document.getElementById('passwordModal').style.display='flex'; }
     function savePassword(){ const old=document.getElementById('oldPassword').value, pwd=document.getElementById('newPassword').value, conf=document.getElementById('confirmPassword').value; if(!old||!pwd) return showError('Заполните поля'); if(pwd!==conf) return showError('Пароли не совпадают'); const s=loadUserData(); if(s && s.password!==old) return showError('Неверный старый пароль'); if(s) saveUserData(s.username,pwd,s.name,s.avatar); showError('Пароль изменён'); document.getElementById('passwordModal').style.display='none'; }
-    function toggleTheme(t){ if(t==='light') document.body.classList.add('light'); else document.body.classList.remove('light'); localStorage.setItem('envex_theme',t); document.querySelectorAll('.theme-option').forEach(o=>o.classList.remove('active')); document.querySelector(`.theme-option[data-theme="${t}"]`).classList.add('active'); }
-    function loadTheme(){ const t=localStorage.getItem('envex_theme')||'dark'; toggleTheme(t); }
     function clearCache(){ if(confirm('Очистить кэш и выйти?')){ localStorage.clear(); clearUserData(); if(ws) ws.close(); location.reload(); } }
     function logout(){ if(confirm('Выйти?')){ clearUserData(); if(ws) ws.close(); location.reload(); } }
     function openAvatarModal(){ document.getElementById('avatarModal').style.display='flex'; }
@@ -1265,12 +1377,13 @@
     document.querySelectorAll('.theme-option').forEach(opt=>{ opt.onclick=()=>toggleTheme(opt.dataset.theme); });
     document.getElementById('avatarInput').onchange=e=>{ const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=ev=>{ const u=ev.target.result; document.getElementById('avatarPreview').style.backgroundImage=`url(${u})`; if(ws?.readyState===WebSocket.OPEN) ws.send(JSON.stringify({ type:'update_profile', avatar:u })); const s=loadUserData(); if(s) saveUserData(s.username,s.password,s.name,u); updateUI(s?.name||currentUser,currentUser,u); }; r.readAsDataURL(f); } };
     
-    const mobileBtn=document.getElementById('mobileMenuBtn'), sidebar=document.getElementById('sidebar');
-    let sidebarOpen=false;
+    // Mobile menu
+    const mobileBtn=document.getElementById('mobileMenuBtn'), sidebar=document.getElementById('sidebar'), rightPanel=document.getElementById('rightPanel');
+    let sidebarOpen=false, rightOpen=false;
     if(window.innerWidth<=768) mobileBtn.style.display='flex';
-    window.addEventListener('resize',()=>{ if(window.innerWidth<=768) mobileBtn.style.display='flex'; else{ mobileBtn.style.display='none'; sidebar.classList.remove('open'); } });
-    mobileBtn.addEventListener('click',e=>{ e.stopPropagation(); sidebar.classList.toggle('open'); sidebarOpen=sidebar.classList.contains('open'); });
-    document.addEventListener('click',e=>{ if(window.innerWidth<=768 && sidebarOpen && !sidebar.contains(e.target) && e.target!==mobileBtn){ sidebar.classList.remove('open'); sidebarOpen=false; } });
+    window.addEventListener('resize',()=>{ if(window.innerWidth<=768) mobileBtn.style.display='flex'; else{ mobileBtn.style.display='none'; sidebar.classList.remove('open'); rightPanel.classList.remove('open'); } });
+    mobileBtn.addEventListener('click',e=>{ e.stopPropagation(); if(!sidebarOpen && !rightOpen){ sidebar.classList.add('open'); sidebarOpen=true; }else if(sidebarOpen){ sidebar.classList.remove('open'); sidebarOpen=false; rightPanel.classList.add('open'); rightOpen=true; }else if(rightOpen){ rightPanel.classList.remove('open'); rightOpen=false; } });
+    document.addEventListener('click',e=>{ if(window.innerWidth<=768 && (sidebarOpen || rightOpen) && !sidebar.contains(e.target) && !rightPanel.contains(e.target) && e.target!==mobileBtn){ sidebar.classList.remove('open'); rightPanel.classList.remove('open'); sidebarOpen=false; rightOpen=false; } });
     
     if(Notification.permission==='default') Notification.requestPermission();
     loadTheme();
