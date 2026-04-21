@@ -20,15 +20,13 @@ app.get('/', (req, res) => {
 // ============ ХРАНИЛИЩА ============
 const users = new Map();
 let messages = [];
-let posts = [];
 let nextId = 1;
-let nextPostId = 1;
 
 // Загрузка данных из файлов
 try {
     const savedUsers = JSON.parse(fs.readFileSync('./users.json', 'utf8'));
     for (const [username, data] of Object.entries(savedUsers)) {
-        users.set(username, { ...data, ws: null });
+        users.set(username, { ...data, ws: null, typingTo: null });
     }
 } catch(e) {}
 
@@ -36,12 +34,6 @@ try {
     const savedMessages = JSON.parse(fs.readFileSync('./messages.json', 'utf8'));
     messages = savedMessages;
     nextId = (messages[messages.length - 1]?.id || 0) + 1;
-} catch(e) {}
-
-try {
-    const savedPosts = JSON.parse(fs.readFileSync('./posts.json', 'utf8'));
-    posts = savedPosts;
-    nextPostId = (posts[posts.length - 1]?.id || 0) + 1;
 } catch(e) {}
 
 function saveUsers() {
@@ -56,15 +48,18 @@ function saveMessages() {
     fs.writeFileSync('./messages.json', JSON.stringify(messages.slice(-2000), null, 2));
 }
 
-function savePosts() {
-    fs.writeFileSync('./posts.json', JSON.stringify(posts.slice(-500), null, 2));
-}
-
 function broadcastToAll(data, excludeWs = null) {
     for (const [username, user] of users) {
         if (user.ws && user.ws !== excludeWs && user.ws.readyState === WebSocket.OPEN) {
             user.ws.send(JSON.stringify(data));
         }
+    }
+}
+
+function broadcastToUser(username, data) {
+    const user = users.get(username);
+    if (user?.ws?.readyState === WebSocket.OPEN) {
+        user.ws.send(JSON.stringify(data));
     }
 }
 
@@ -100,7 +95,7 @@ wss.on('connection', (ws) => {
                 }
                 
                 users.set(username, {
-                    password, name: name || username.substring(1), online: true, ws, lastSeen: Date.now(), avatar: avatar || null
+                    password, name: name || username.substring(1), online: true, ws, lastSeen: Date.now(), avatar: avatar || null, typingTo: null
                 });
                 currentUser = username;
                 
@@ -108,7 +103,6 @@ wss.on('connection', (ws) => {
                 
                 const userMessages = messages.filter(m => m.from === username || m.to === username);
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
-                ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
                 
                 broadcastUserList();
                 saveUsers();
@@ -139,7 +133,6 @@ wss.on('connection', (ws) => {
                 
                 const userMessages = messages.filter(m => m.from === username || m.to === username);
                 ws.send(JSON.stringify({ type: 'history', messages: userMessages.slice(-200) }));
-                ws.send(JSON.stringify({ type: 'posts', posts: posts.slice(-50) }));
                 
                 broadcastUserList();
                 saveUsers();
@@ -160,6 +153,20 @@ wss.on('connection', (ws) => {
                 return;
             }
             
+            // === СТАТУС ПЕЧАТАЕТ ===
+            if (data.type === 'typing') {
+                const { to } = data;
+                const user = users.get(currentUser);
+                if (user) user.typingTo = to;
+                broadcastToUser(to, { type: 'typing', from: currentUser });
+                setTimeout(() => {
+                    if (users.get(currentUser)?.typingTo === to) {
+                        broadcastToUser(to, { type: 'stop_typing', from: currentUser });
+                    }
+                }, 2000);
+                return;
+            }
+            
             // === ЛИЧНОЕ СООБЩЕНИЕ ===
             if (data.type === 'message') {
                 const { to, text, isImage } = data;
@@ -168,7 +175,7 @@ wss.on('connection', (ws) => {
                     id: nextId++, from: currentUser, to, text, isImage: isImage || false,
                     time: Date.now(),
                     timeStr: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                    status: 'sent', read: false
+                    status: 'sent', read: false, edited: false
                 };
                 messages.push(msg);
                 saveMessages();
@@ -181,24 +188,17 @@ wss.on('connection', (ws) => {
                 ws.send(JSON.stringify({ type: 'new_message', message: msg }));
             }
             
-            // === НОВЫЙ ПОСТ ===
-            if (data.type === 'new_post') {
-                const { text, isImage } = data;
-                const user = users.get(currentUser);
-                
-                const post = {
-                    id: nextPostId++,
-                    author: currentUser,
-                    authorName: user.name,
-                    authorAvatar: user.avatar,
-                    text, isImage: isImage || false,
-                    time: Date.now(),
-                    timeStr: new Date().toLocaleString(),
-                    likes: 0, comments: 0
-                };
-                posts.unshift(post);
-                savePosts();
-                broadcastToAll({ type: 'new_post', post });
+            // === РЕДАКТИРОВАНИЕ СООБЩЕНИЯ ===
+            if (data.type === 'edit_message') {
+                const { messageId, newText } = data;
+                const msg = messages.find(m => m.id === messageId);
+                if (msg && msg.from === currentUser) {
+                    msg.text = newText;
+                    msg.edited = true;
+                    saveMessages();
+                    broadcastToUser(msg.to, { type: 'message_edited', messageId, newText });
+                    ws.send(JSON.stringify({ type: 'message_edited', messageId, newText }));
+                }
                 return;
             }
             
